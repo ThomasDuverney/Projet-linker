@@ -24,7 +24,7 @@ int main (int argc, char *argv[]){
     FILE* ElfFile = NULL;
     Elf32_Ehdr hdr;
 
-    ElfFile = fopen ( "test.o" , "rb" );  
+    ElfFile = fopen ( "file1.o" , "rb" );  
     if (ElfFile==NULL) 
     {
         printf ("\nFile error"); 
@@ -36,6 +36,16 @@ int main (int argc, char *argv[]){
             printf("failed to read elf header\n");
             exit(1);
     }
+
+		if(hdr.e_type == 1)
+        printf("Relocatable\n");
+    else if(hdr.e_type == 2)
+        printf("Executable\n");
+    else if(hdr.e_type == 3)
+        printf("Shared Object\n");
+    else
+        printf("Unknown\n");
+
 
     return 0;
 
