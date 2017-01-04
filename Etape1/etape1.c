@@ -68,7 +68,7 @@ int main (int argc, char *argv[]){
 	       	else if(structElf32.e_ident[EI_OSABI] == 3)
 	       	  	  printf("LINUX\n");
 	       	else
-	       		  printf("autres ou inconnu"\n");	
+	       		  printf("autres ou inconnu\n");	
 		
 	// ------------LA MACHINE 
 	    printf("Machine :\t");
@@ -85,8 +85,8 @@ int main (int argc, char *argv[]){
 	    	  printf("Motorola 88000\n");
 	    else if(structElf32.e_machine == 6)
 	    	  printf("Intel 80860\n");
-	    else if(structElf32.e_machine == 64)
-	    	  printf("AMD\n");
+	    else if(structElf32.e_machine == 40)
+	    	  printf("ARM\n");
 	    else
 		printf("Inconnu ou non spécifie\n");	
 		  
@@ -103,10 +103,17 @@ int main (int argc, char *argv[]){
 	    else
 		printf("Inconnu ou non spécifie\n");
         
-	     /*
+	     
 	// -----------LA TAILLE DU HEADER
-	    printf("Taille :\t%",structElf32.e_phentsize);   */	  
-  }
+	    printf("Taille :\t %i (Bytes) \n",structElf32.e_ehsize);
+	    
+	// -----------DEBUT DE LA SECTION
+	    printf("Début des en-têtes de section :\t %i (octet dans le fichier) \n",structElf32.e_shoff);
+	    
+	// -----------LA TABLE DES CHAINES 
+	    printf("Table d'indexes des chaînes d'en-tête de section :\t %i\n",structElf32.e_shstrndx);   	  
+
+}
     fclose(fichierElf);
     
     return 0;
