@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <elf.h>
+#include <string.h>
+#include "fonctionUtile.h"
     
     
 int main (int argc, char *argv[]){
     
-    FILE* fichierElf = NULL;
-    Elf32_Ehdr structElf32;
     
     if(argc >= 3){
     	 printf ("Un seul paramètre nécessaire en entrée \n"); 
@@ -15,21 +15,7 @@ int main (int argc, char *argv[]){
     }
     else{
     	
-    
-    	 
-    fichierElf = fopen ( argv[1], "rb" );  
-    
-    if (fichierElf==NULL) 
-    {
-        printf ("\nFile error"); 
-        exit (1);
-    }
-
-    if (!fread(&structElf32, sizeof(structElf32), 1, fichierElf))
-    {
-            printf("failed to read elf header\n");
-            exit(1);
-    }
+	 Elf32_Ehdr structElf32 = lireHeaderElf(argv);
     
     if(structElf32.e_ident[EI_MAG0] ==0x7f && structElf32.e_ident[EI_MAG1] =='E' && structElf32.e_ident[EI_MAG2] =='L' && structElf32.e_ident[EI_MAG3] =='F'){
     
@@ -123,7 +109,7 @@ int main (int argc, char *argv[]){
 	    printf("Table d'indexes des chaînes d'en-tête de section :\t %i\n",structElf32.e_shstrndx);   	  
 
     }
-    fclose(fichierElf);
+    //fclose(fichierElf);
     }
     return 0;
 
