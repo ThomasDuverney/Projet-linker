@@ -5,12 +5,16 @@
 
 //<=> readelf -S file1.o
 
-char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader, FILE* fich);
+char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader,int numSection,FILE* fichierElf);
+
+char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf);
+
+Elf32_Ehdr lireHeaderElf(char *argv[]);
 
 int main(int argc, char *argv[]){
 	
 	FILE* fichierElf = NULL;
-	Elf32_Ehdr structElf32;
+	//Elf32_Ehdr structElf32;
 	Elf32_Shdr structSectionHeader;
 	int i;//variable de boucle
     
@@ -27,13 +31,10 @@ int main(int argc, char *argv[]){
   		exit (1);
   	}
 
-  	if (!fread(&structElf32, sizeof(structElf32), 1, fichierElf))
-  	{
-    	printf("failed to read elf header\n");
-    	exit(1);
-  	}
-    
-    //on se place au début de la table des headers
+        // ON APPELLE LA FONCTION QUI LIT LE HEADER DU FICHIER ELF
+        Elf32_Ehdr structElf32 = lireHeaderElf(argv);
+        
+      //on se place au début de la table des headers
   	fseek(fichierElf,structElf32.e_shoff,0); 
    	
    	//structElf32.e_shentsize <=> taille de la table des sections
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]){
   		printf("%i||",i);
   		
   		//nom
-  		printf("NOM_ICI||");//,lire_nom(structElf32,structSectionHeader, fichierElf));
+  		printf("%s||",lire_nom(structElf32,structSectionHeader,i,fichierElf));
   		
   		//Type
   		switch(structSectionHeader.sh_type){
@@ -167,27 +168,60 @@ int main(int argc, char *argv[]){
 	
 }
 
-char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader, FILE* fich){
+char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader,int numSection,FILE* fichierElf){
+     char* name = "";
+     
+     char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	
-	char* nom;
-	char c='a';
-	int i = 0;
-	long pos = ftell(fich);
+    fseek(fichierElf, structElf32.e_shoff + numSection * sizeof(Elf32_Shdr), SEEK_SET);
+    fread(&structSectionHeader, 1, sizeof(Elf32_Shdr), fichierElf);
 
-	fseek(fich,structElf32.e_shstrndx + structSectionHeader.sh_name,SEEK_SET); 
-	
-	while(c!='\0'){
-
-		fread(&c,1,sizeof(char),fich);
-		i++;
-		printf("%c\n",c);
-		//nom[i]=c;
-		
-	}
-	
-	fseek(fich,pos,0); 
-	
-	return nom;
-	
+    // print section name
+    if (structSectionHeader.sh_name)
+      name = TableNomSection + structSectionHeader.sh_name;
+    
+    return name;
+    
 }
 
+char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
+
+
+  char* tabNomSection = NULL;
+  Elf32_Shdr sectHdr;
+
+   // read section name string table
+  // first, read its header
+  fseek(fichierElf, elfHdr.e_shoff + elfHdr.e_shstrndx * sizeof sectHdr, SEEK_SET);
+  fread(&sectHdr, 1, sizeof (sectHdr), fichierElf);
+
+  // next, read the section, string data
+  tabNomSection = malloc(sectHdr.sh_size);
+  fseek(fichierElf, sectHdr.sh_offset, SEEK_SET); //REVIENT DEBUT SECTION
+  fread(tabNomSection, 1, sectHdr.sh_size, fichierElf);
+  
+  return tabNomSection;
+  
+}
+
+Elf32_Ehdr lireHeaderElf(char *argv[]){
+
+    FILE* fichierElf = NULL;
+    Elf32_Ehdr structElf32;
+
+    fichierElf = fopen ( argv[1], "rb" );  
+    
+    if (fichierElf==NULL) 
+    {
+        printf ("\nFile error"); 
+        exit (1);
+    }
+
+    if (!fread(&structElf32, sizeof(structElf32), 1, fichierElf))
+    {
+            printf("failed to read elf header\n");
+            exit(1);
+    }
+    
+    return structElf32;
+}

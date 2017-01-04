@@ -38,7 +38,7 @@ int main (int argc, char *argv[]){
 	// ------------LE NOMBRE MAGIQUE    
 	    printf("Magique :\t");
      
-	    for(int i=1;i<EI_NIDENT;++i) 
+	    for(int i=0;i<EI_NIDENT;++i) 
 		printf("%x",structElf32.e_ident[i]);
 		
 	// ------------LA CLASSE
