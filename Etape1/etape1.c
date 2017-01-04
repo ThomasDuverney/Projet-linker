@@ -8,6 +8,15 @@ int main (int argc, char *argv[]){
     FILE* fichierElf = NULL;
     Elf32_Ehdr structElf32;
     
+    if(argc >= 3){
+    	 printf ("Un seul paramètre nécessaire en entrée \n"); 
+    }else if(argc <=1 ){
+    	 printf ("Rentrer un nom de fichier en paramètre \n"); 
+    }
+    else{
+    	
+    
+    	 
     fichierElf = fopen ( argv[1], "rb" );  
     
     if (fichierElf==NULL) 
@@ -113,9 +122,9 @@ int main (int argc, char *argv[]){
 	// -----------LA TABLE DES CHAINES 
 	    printf("Table d'indexes des chaînes d'en-tête de section :\t %i\n",structElf32.e_shstrndx);   	  
 
-}
+    }
     fclose(fichierElf);
-    
+    }
     return 0;
 
 }
