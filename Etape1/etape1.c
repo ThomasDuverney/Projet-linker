@@ -23,10 +23,13 @@ int main (int argc, char *argv[]){
     }
 
     printf("En-tête ELF : \n");
-    
-    
+    printf("Magique :\t");
+     
+    for(int i=0;i<15;++i) 
+        printf("%x",structElf32.e_ident[i]);
+         
 // ------------LA MACHINE 
-    printf("Machine :\t");
+    printf("\nMachine :\t");
         
     if(structElf32.e_machine == 1)
           printf("AT&T WE 32100\n");
@@ -58,10 +61,9 @@ int main (int argc, char *argv[]){
     else
         printf("Inconnu ou non spécifie\n");
         
-        
+     /*
 // -----------LA TAILLE DU HEADER
-    printf("Taille :\t%",structElf32.e_phentsize);   	  
-
+    printf("Taille :\t%",structElf32.e_phentsize);   */	  
 
     fclose(fichierElf);
     
