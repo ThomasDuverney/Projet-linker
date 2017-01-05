@@ -2,8 +2,12 @@
 #include <stdlib.h>
 #include <elf.h>
 #include "fonctionUtile.h"
+#include <string.h>
 
-char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader,int numSection,FILE* fichierElf){
+char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf){
+
+     Elf32_Shdr structSectionHeader;
+     
      char* name = "";
      
      char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
@@ -84,4 +88,45 @@ Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf){
   	}
 
 	return tabHeaders;
+}
+
+Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32){
+
+	int j = 0;
+	char * tempNom =lire_nom(structElf32,j,fichierElf);
+	
+	while(j<structElf32.e_shnum && strcmp(nomSection,tempNom)){
+		j++;
+		tempNom =lire_nom(structElf32,j,fichierElf);
+	}
+	
+	if( j == structElf32.e_shnum){
+		printf("Le nom de section recherché n'est pas disponible dans ce fichier");
+		exit (1);
+		
+	}else{
+	
+		return tabHeaders[j];
+	}
+	
+}
+
+void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
+	
+	char* contenuSection = malloc(taille);
+	  
+	fseek(fichierElf,position, SEEK_SET);
+	fread(contenuSection, 1, taille, fichierElf);
+	
+	int i;
+	for(i=0;i<=taille;i++){
+	
+		if(i%4 == 0 && i!=0){
+		  printf("     ");
+		}
+		if(i%16 == 0 && i!=0){
+			printf("\n");
+		}
+			printf("%02x",contenuSection[i]);
+	}
 }
