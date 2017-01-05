@@ -60,3 +60,28 @@ Elf32_Ehdr lireHeaderElf(char *argv[]){
     
     return structElf32;
 }
+
+
+Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf){
+
+	Elf32_Shdr * tabHeaders = malloc(sizeof(Elf32_Shdr)*structElf32.e_shoff);
+	Elf32_Shdr structSectionHeader;
+	int i;
+	
+	fseek(fichierElf,structElf32.e_shoff,0); 
+   	
+   	//structElf32.e_shentsize <=> taille de la table des sections
+
+  	for(i=0;i<structElf32.e_shnum;i++){
+  	
+  		if (!fread(&structSectionHeader, sizeof(Elf32_Shdr), 1, fichierElf))
+  		{
+    		printf("failed to read elf section header\n");
+    		exit(1);
+  		}
+  		tabHeaders[i]=structSectionHeader;
+
+  	}
+
+	return tabHeaders;
+}
