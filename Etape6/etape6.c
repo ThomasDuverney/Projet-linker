@@ -27,6 +27,11 @@ int main(int argc,char* argv[]){
 		
 	}
 	
+	//Lecture des headers
+	Elf32_Ehdr structDest = lireHeaderElf(arv[1]);
+	Elf32_Ehdr structSecond = lireHeaderElf(arv[2]);
+	
+	
 	
 	
 	fclose(fichDest);
