@@ -60,11 +60,39 @@ int main(int argc, char *argv[]){
 	return 0;
 	
 }
-/*
+
 void fonctionEtape5(fichierElf,structElf32,tabHeaders){
+	
+	// CREATION TABLEAU DES HEADERS SECTION REIMPLENTATION
+	int size;
+	Elf32_Shdr * tabReal;
+	tabReal = rechercherTablesReimplentation(tabHeaders,structElf32, &size,fichierElf);
+	
+	int i;
+	Elf32_Rel * tabSymRel;
+	
+	
+	if(size!=0){
+		
+		// CREATION TABLEAU DES SYMBOLES POUR CHAQUE SECTION REALOCATION
+		for(i =0 ; i < size; i++){
+	
+			if(tabReal[j].sh_type == SHT_REL){
+		
+			tabSymRel=tabSymboleRel(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
+		
+			}else{
+			
+			}
+		}
+	}
+	
+	int j;
+	for(j =0 ; j <= tabReal[i].sh_size ; j++){
+		printf("%i",tabSymRel[i].r_offset);
+	}
 
-
-}*/
+}
 
 Elf32_Shdr *  rechercherTablesReimplentation(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
 
