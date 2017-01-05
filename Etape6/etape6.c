@@ -24,13 +24,13 @@ int main(int argc,char* argv[]){
 			printf("Erreur lors de l'ouverture du premier fichier\n");
 		else
 			printf("Erreur lors de l'ouverture du second fichier\n");
+		exit(2);
 		
 	}
 	
 	//Lecture des headers
-	Elf32_Ehdr structDest = lireHeaderElf(arv[1]);
-	Elf32_Ehdr structSecond = lireHeaderElf(arv[2]);
-	
+	Elf32_Ehdr structDest = lireHeaderElf(argv[1]);
+	Elf32_Ehdr structSecond = lireHeaderElf(argv[2]);
 	
 	
 	
