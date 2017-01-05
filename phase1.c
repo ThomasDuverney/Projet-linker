@@ -4,39 +4,6 @@
 #include <string.h>
 #include "fonctionUtile.h"
 
-
-
-void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichierElf);
-
-
-
-int main(int argc, char *argv[]){
-
-	FILE* fichierElf = NULL;
-
-	if(argc != 2){
-    	printf("Syntaxe : ./etape3 file\n");
-    	exit(1);
-     }
-
-    fichierElf = fopen ( argv[1], "rb" );
-
-    if (fichierElf==NULL) {
-    	printf ("\nFile error\n");
-  		exit (1);
-  	}
-
-    // ON APPELLE LA FONCTION QUI LIT LE HEADER DU FICHIER ELF
-        Elf32_Ehdr structElf32 = lireHeaderElf(argv);
-
-
-   	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-		fonctionEtape5(tabHeaders,structElf32,fichierElf);
-
-	return 0;
-
-}
-
 void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichierElf){
 
 	int size;
