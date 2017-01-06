@@ -11,7 +11,7 @@ int main (int argc, char *argv[]){
   FILE* fichierElf;
   Elf32_Ehdr structElf32;
   
-  if ( argv[1][0] == '-' && argc>=3 && strlen(argv[1]) == 2){
+  if (argc>=3 && argv[1][0] == '-' && strlen(argv[1]) == 2){
 	  
 	    switch(argv[1][1]){
 
@@ -95,8 +95,11 @@ int main (int argc, char *argv[]){
 	  fclose(fichierElf);
   }else{
   		printf("Utilisation de myReadElf : ./readElf -option ...\n");
-  		printf("Options : -h <fichier> \t\t Affiche les infos contenu dans le header du fichier elf en paramètre");
-  		printf("\t -S <fichier> \t\t
+  		printf("Options : -h <fichier> \t\t\t\t\t Affiche les infos contenu dans le header du fichier elf en paramètre\n");
+  		printf("\t  -S <fichier> \t\t\t\t\t Affiche les informations de la table des sections du fichier elf passé en paramètre\n");
+  		printf("\t  -x <numéro (ou nom) de section> <fichier> \t Affiche le contenu de la section de numéro (ou nom) passé en pramaètre\n");
+  		printf("\t  -s <fichier> \t\t\t\t\t Affiche la table des symboles du fichier elf passé en paramètre\n");
+  		printf("\t  -r <fichier> \t\t\t\t\t Affichage des réallocations contenu dans le fichier elf passé en paramètre\n");
   }
 
   return 0;

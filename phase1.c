@@ -66,7 +66,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 	       	  printf("SPARC\n");
 	    else if(structElf32.e_machine == 3)
 	    	  printf("Intel 80386\n");
-	    else if(structElf32.e_machine == 4)
+	    else if(structElf32.e_machine == 4)-h
 	    	  printf("Motorola 68000\n");
 	    else if(structElf32.e_machine == 5)
 	    	  printf("Motorola 88000\n");
