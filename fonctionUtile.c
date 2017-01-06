@@ -141,11 +141,13 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
 
 void afficherRelocation(int r_info,int r_offset){
 	printf("offset\t");
-	printf("Info\t");
-	printf("Type\n");
+	printf("\tInfo\t");
+	printf("\tType\t");
+	printf("\tVal.-Sym\n");
+	
+	printf("%08x\t",r_offset);
+	printf("%08x\t",r_info);
 
-	printf("%i\t",r_info);
-	printf("%x\t",r_offset);
 
 	switch(ELF32_R_TYPE(r_info)){
 
@@ -164,17 +166,20 @@ void afficherRelocation(int r_info,int r_offset){
 		case 28:
 			printf("R_ARM_CALL");
 			break;
-		case 29:
+		case 29:	
 			printf("R_ARM_JUMP24");
 			break;
 		default:
 			printf("Ne correspont à aucun type");
 			break;
 	}
+	printf("\t");
+	
+	printf("%08x\t",ELF32_R_SYM(r_info));
+	
 	printf("\n");
 
 }
-
 Elf32_Shdr *  rechercherTablesReimplentation(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
 
 	Elf32_Shdr * tabSectionReimp;
