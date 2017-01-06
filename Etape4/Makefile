@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror
+CFLAGS=-Wall 
 
 etape3: etape3.o fonctionUtile.o
 	$(CC) -o etape4 etape4.o fonctionUtile.o
