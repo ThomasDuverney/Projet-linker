@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <elf.h>
 #include <string.h>
+#include <ctype.h>
 #include "fonctionUtile.h"
 
 
@@ -237,7 +238,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 }
 
 
-void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichierElf){
+void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
 
 	int size;
 	Elf32_Shdr * tabReal;
@@ -245,6 +246,8 @@ void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichie
 	int j;
 	Elf32_Rel * tabSymRel; // Tableau symbole relocation rel
 	Elf32_Rela * tabSymRela;// Tableau symbole relocation rela
+	
+	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
 
 	// CREATION TABLEAU DES HEADERS SECTION REIMPLENTATION
 	tabReal = rechercherTablesReimplentation(tabHeaders,structElf32, &size,fichierElf);
@@ -277,3 +280,25 @@ void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichie
 			exit(1);
 	}
 }
+
+void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
+	
+	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
+	Elf32_Shdr tempHed;
+	printf("Affichage de la section : %s \n",section);
+	
+	if(isalpha(*section) != 0){
+	
+		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
+		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
+	
+	}else{
+		
+		Elf32_Shdr tempHed = tabHeaders[atoi(section)];
+		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
+		
+	}
+	
+	printf("\n");
+	
+}  

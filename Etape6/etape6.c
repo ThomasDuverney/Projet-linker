@@ -33,7 +33,6 @@ int main(int argc,char* argv[]){
 	Elf32_Ehdr structSecond = lireHeaderElf(argv[2]);
 	
 	
-	
 	fclose(fichDest);
 	fclose(secondFich);
 	return 0;

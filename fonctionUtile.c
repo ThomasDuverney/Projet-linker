@@ -31,7 +31,7 @@ FILE * ouvrirFichier(char * nomFichier){
 
     if (fichierElf==NULL)
     {
-        printf ("\nFile error");
+        printf ("\nFile error\n");
         exit (1);
     }
     
@@ -135,7 +135,7 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
 		if(i%16 == 0 && i!=0){
 			printf("\n");
 		}
-			printf("%02x",contenuSection[i]);
+		printf("%02x",contenuSection[i]);
 	}
 }
 

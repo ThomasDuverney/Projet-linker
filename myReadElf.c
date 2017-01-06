@@ -11,7 +11,7 @@ int main (int argc, char *argv[]){
   FILE* fichierElf;
   Elf32_Ehdr structElf32;
   
-  if ( argv[1][0] == '-' && argc==3 ){
+  if ( argv[1][0] == '-' && argc>=3 && strlen(argv[1]) == 2){
 	  
 	    switch(argv[1][1]){
 
@@ -24,7 +24,9 @@ int main (int argc, char *argv[]){
 	      	 fonctionEtape1(structElf32);
 	      	 
 	      }else{
-	      	 printf(" Essayez myReadElf -h \"nomfichier\""); 
+	   
+	      	 printf(" Essayez myReadElf -h \"nomFichier\""); 
+	   
 	      }
 	 
 	      break;
@@ -33,32 +35,70 @@ int main (int argc, char *argv[]){
 	    	  
 	    	   fichierElf = ouvrirFichier(argv[2]);
 	      	   structElf32 = lireHeaderElf(fichierElf);
-	      	 	  
 			   fonctionEtape2(structElf32,fichierElf);
-		  }else{
-	      	 	printf(" Essayez myReadElf -S \"nomfichier\""); 
-	      	  }
+
+			}else{
+
+	      	 	printf(" Essayez myReadElf -S \"nomFichier\""); 
+
+	      	}
 		  		   
 	      break;
 	    case 'x':
-	      printf("x");
+	    	
+	    	if(argc == 4){
+	    		
+	    		fichierElf = ouvrirFichier(argv[3]);
+	      	 	structElf32 = lireHeaderElf(fichierElf);
+	      	 	fonctionEtape3(fichierElf,argv[2],structElf32);
+	    		
+	    	}else{
+	    		
+	    		printf("Essayez myReadElf -x \"numéroDeSection\" \"nomFichier\"");
+	    		
+	    	}
+	      
 	      break;
-	    case 't':
-	      printf("t");
+	    case 's':
+	      
+	      if(argc == 3){
+	      	
+	      	printf("Etape 4");
+	      	
+	      }else{
+	      	
+	      	printf("Essayez myReadElf -s \"nomFichier\"");
+	      	
+	      }
+	      
 	      break;
 	    case 'r':
-	      printf("r");
+	      
+	      if(argc == 3){
+	      
+	      	fichierElf = ouvrirFichier(argv[2]);
+	      	structElf32 = lireHeaderElf(fichierElf);
+	      	fonctionEtape5(structElf32,fichierElf);
+	      
+	      }else{
+	      	
+	      	printf("Essayez myReadElf -r \"nomFichier\"");	
+	      	
+	      }
+	      
 	      break;
 	    default:
 	      printf("Ne correspont à aucun type");
 	      break;
 	      
 	  }
+	  fclose(fichierElf);
   }else{
-  		printf(" myReadElf nécessite une option -h, -S , -r ... ainsi qu'un nom de fichier"); 
+  		printf("Utilisation de myReadElf : ./readElf -option ...\n");
+  		printf("Options : -h <fichier> \t\t Affiche les infos contenu dans le header du fichier elf en paramètre");
+  		printf("\t -S <fichier> \t\t
   }
 
-  //fclose(fichierElf);
   return 0;
 
 }
