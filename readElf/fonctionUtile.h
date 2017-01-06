@@ -23,3 +23,9 @@ Elf32_Rel * tabSymboleRel(Elf32_Off position,Elf32_Word  taille,FILE * fichierEl
 Elf32_Rela * tabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf);
 
 void afficherRelocation(int r_info,int r_offset);
+
+char * LireNomSymb(char * tabString, int indexSymb);
+
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf);
+
+

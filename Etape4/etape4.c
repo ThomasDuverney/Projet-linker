@@ -4,6 +4,10 @@
 #include <string.h>
 #include "fonctionUtile.h"
 
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf);
+
+char * LireNomSymb(char * tabString, int indexSymb);
+
 int main(int argc, char *argv[]){
 	FILE* fichierElf = NULL;
 
@@ -14,25 +18,32 @@ int main(int argc, char *argv[]){
 
 	fichierElf = fopen ( argv[1], "rb" );
 
-  if (fichierElf==NULL) 
-  {
+  	if (fichierElf==NULL) 
+ 	{
   	printf ("\nFile error\n"); 
 		exit (1);
 	}
 
   // On appelle la fonction qui lit le header du fichier ELF
-  Elf32_Ehdr structElf32 = lireHeaderElf(argv);
+  	Elf32_Ehdr structElf32 = lireHeaderElf(fichierElf);
 
 
-  //On se place au début de la table des headers
-	fseek(fichierElf,structElf32.e_shoff,0); 
-	
 	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
 
 	// On cherche la table des symboles
-	Elf32_Shdr structSymTable = accesSectionParType(structElf32,fichierElf, SHT_SYMTAB);
+	Elf32_Shdr structSymTable;
+	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32);
+	
 	int symTableSize = structSymTable.sh_size/structSymTable.sh_entsize;	
 	Elf32_Sym symbole;
+	
+	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
+	
+	
+	char * tabString;
+	int size;
+	
+	tabString = AccesTableString(tabHeaders,structElf32,&size,fichierElf);
 
 	fseek(fichierElf,structSymTable.sh_offset,0); 
 
@@ -99,17 +110,48 @@ int main(int argc, char *argv[]){
 									printf("Error ||");
 									break;
 				}
-
-
-		// Affichage du nom
-		char* name = NULL;
-
-		
-		printf("%s",name);
-
+	
+		if (symbole.st_name){
+			char * nomSymb = LireNomSymb(tabString,symbole.st_name);		
+			printf("%s",nomSymb);
+		}	
 		printf("\n");
 		
 	}
 
 	return 0;
+}
+
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
+
+	Elf32_Shdr HdrTableString;
+	
+	HdrTableString = RechercheSectionByName(fichierElf,".strtab",tabHeaders,structElf32);
+	
+	Elf32_Off position = HdrTableString.sh_offset;
+	Elf32_Word  taille = HdrTableString.sh_size;
+	*size=taille;
+	
+	char * tabString = malloc(taille); 
+	
+	if( tabString == NULL ){
+		return NULL;
+	}
+	
+	fseek(fichierElf,position, SEEK_SET); 
+  	fread(tabString,1,taille,fichierElf);
+  	
+  	return tabString;
+	
+	// RECHERCHE TABLE STRING .STRTAB
+	// LA REMPLIR GRACE A SON OFFSET ET SA TAILLE DANS UN TABLEAU CHAR AVEC FREAD
+	// UTILISER LE TABLEAU + INDEX SYMBOLE POUR TROUVER LE NOM DU SYMBOLE
+}
+
+char * LireNomSymb(char * tabString, int indexSymb){
+
+	char * nomSymb;
+	nomSymb = tabString + indexSymb;
+	
+	return nomSymb;
 }

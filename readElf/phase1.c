@@ -239,6 +239,122 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 
 }
 
+void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
+	
+	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
+	Elf32_Shdr tempHed;
+	printf("Affichage de la section : %s \n",section);
+	
+	if(isdigit(*section) == 0){
+	
+		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
+		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
+	
+	}else{
+		
+		Elf32_Shdr tempHed = tabHeaders[atoi(section)];
+		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
+		
+	}
+	
+	printf("\n");
+	
+}  
+
+void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
+
+	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
+
+	// On cherche la table des symboles
+	Elf32_Shdr structSymTable;
+	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
+	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32);
+	
+	int symTableSize = structSymTable.sh_size/structSymTable.sh_entsize;	
+	Elf32_Sym symbole;
+	
+
+	
+	
+	char * tabString;
+	int size;
+	
+	tabString = AccesTableString(tabHeaders,structElf32,&size,fichierElf);
+
+	fseek(fichierElf,structSymTable.sh_offset,0); 
+
+	for(int i=0; i<symTableSize; i++){ 
+		fread(&symbole, sizeof(symbole), 1, fichierElf);
+		// Affichage du numéro de section
+		printf("  %d    ||", i);
+
+		// Affichage de la valeur
+		printf("%8.8x||", symbole.st_value);
+
+		//Affichage de la taille
+		printf("%2.2d    ||",symbole.st_size);
+		
+		// Affichage du type	
+		switch(ELF32_ST_TYPE(symbole.st_info)){
+					
+			case 0:
+				printf("NOTYPE ||");
+				break;
+			case 1:
+				printf("OBJECT ||");
+				break;
+			case 2:
+				printf("FUNC   ||");
+				break;
+			case 3:
+				printf("SECTION||");
+				break;
+			case 4:
+				printf("FILE   ||");
+				break;
+			case 13:
+				printf("LOPROC ||");
+				break;
+			case 15:
+				printf("HIPROC ||");
+				break; 
+			default:
+				printf("Error  ||");
+				break;
+		}
+
+	 //Affichage de la portée
+
+		switch(ELF32_ST_BIND(symbole.st_info)){
+					
+			case 0:
+				printf("LOCAL || ");
+				break;
+			case 1:
+				printf("GLOBAL|| ");
+				break;
+			case 2:
+				printf("WEAK  ||");
+				break;
+			case 13:
+				printf("LOPROC||");
+				break;
+			case 15:
+				printf("HIPROC||");
+				break;
+			default:
+				printf("Error ||");
+				break;
+				}
+	
+		if (symbole.st_name){
+			char * nomSymb = LireNomSymb(tabString,symbole.st_name);		
+			printf("%s",nomSymb);
+		}	
+		printf("\n");
+		
+	}
+}
 
 void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
 
@@ -283,24 +399,4 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
 	}
 }
 
-void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
-	
-	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-	Elf32_Shdr tempHed;
-	printf("Affichage de la section : %s \n",section);
-	
-	if(isdigit(*section) == 0){
-	
-		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
-		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
-	
-	}else{
-		
-		Elf32_Shdr tempHed = tabHeaders[atoi(section)];
-		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
-		
-	}
-	
-	printf("\n");
-	
-}  
+

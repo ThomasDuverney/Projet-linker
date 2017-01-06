@@ -34,9 +34,9 @@ int main (int argc, char *argv[]){
 	    	if(argc == 3){
 	    	  
 	    	   fichierElf = ouvrirFichier(argv[2]);
-	      		structElf32 = lireHeaderElf(fichierElf);
-			   fonctionEtape2(structElf32,fichierElf);
-			  fclose(fichierElf);
+	      	   structElf32 = lireHeaderElf(fichierElf);
+	           fonctionEtape2(structElf32,fichierElf);
+		   	   fclose(fichierElf);
 			}else{
 
 	      	 	printf(" Essayez myReadElf -S \"nomFichier\"\n"); 
@@ -64,7 +64,9 @@ int main (int argc, char *argv[]){
 	      
 	      if(argc == 3){
 	      	
-	      	printf("Etape 4\n");
+	      	    fichierElf = ouvrirFichier(argv[2]);
+	      	 	structElf32 = lireHeaderElf(fichierElf);
+	      	 	fonctionEtape4(fichierElf,structElf32);
 	      	
 	      }else{
 	      	

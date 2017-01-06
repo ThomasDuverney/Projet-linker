@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
         
 
     Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-	fonctionEtape3(fichierElf,"5",structElf32,tabHeaders);
+	fonctionEtape3(fichierElf,".shstrtab",structElf32,tabHeaders);
 	
 	
 	/*
@@ -47,8 +47,8 @@ int main(int argc, char *argv[]){
 void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32, Elf32_Shdr * tabHeaders){
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
-	
-	if(isalpha(*section) != 0){
+		
+	if(isdigit(*section)==0){
 	
 		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
 		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);

@@ -268,3 +268,37 @@ Elf32_Rela * tabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichier
 	return tabSymbolRela;
 
 }
+
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
+
+	Elf32_Shdr HdrTableString;
+	
+	HdrTableString = RechercheSectionByName(fichierElf,".strtab",tabHeaders,structElf32);
+	
+	Elf32_Off position = HdrTableString.sh_offset;
+	Elf32_Word  taille = HdrTableString.sh_size;
+	*size=taille;
+	
+	char * tabString = malloc(taille); 
+	
+	if( tabString == NULL ){
+		return NULL;
+	}
+	
+	fseek(fichierElf,position, SEEK_SET); 
+  	fread(tabString,1,taille,fichierElf);
+  	
+  	return tabString;
+	
+	// RECHERCHE TABLE STRING .STRTAB
+	// LA REMPLIR GRACE A SON OFFSET ET SA TAILLE DANS UN TABLEAU CHAR AVEC FREAD
+	// UTILISER LE TABLEAU + INDEX SYMBOLE POUR TROUVER LE NOM DU SYMBOLE
+}
+
+char * LireNomSymb(char * tabString, int indexSymb){
+
+	char * nomSymb;
+	nomSymb = tabString + indexSymb;
+	
+	return nomSymb;
+}
