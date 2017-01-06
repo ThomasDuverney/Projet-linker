@@ -289,7 +289,7 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
 	
-	if(isalpha(*section) != 0){
+	if(isdigit(*section) == 0){
 	
 		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
 		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
