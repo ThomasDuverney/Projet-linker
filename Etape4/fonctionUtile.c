@@ -3,7 +3,10 @@
 #include <elf.h>
 #include "fonctionUtile.h"
 
-char* lire_nom(Elf32_Ehdr structElf32, Elf32_Shdr structSectionHeader,int numSection,FILE* fichierElf){
+char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf){
+
+     Elf32_Shdr structSectionHeader;
+     
      char* name = "";
      
      char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
@@ -38,6 +41,7 @@ char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
   return tabNomSection;
   
 }
+
 
 Elf32_Ehdr lireHeaderElf(char *argv[]){
 
@@ -92,12 +96,12 @@ Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf){
 	fichierElf : le fichier ELF
 	return Elf32_Shdr : la section contenant la table des symboles
 */
-Elf32_Shdr accesSectionTableSymboles(Elf32_Ehdr structElf32, FILE * fichierElf){
+Elf32_Shdr accesSectionParType(Elf32_Ehdr structElf32, FILE * fichierElf, Elf32_Word nomSection){
 	int i = 0;
-	Elf32_Shdr structSymTable;
+	Elf32_Shdr section;
 
-	while(i<structElf32.e_shnum && structSymTable.sh_type != SHT_SYMTAB){
-		if (!fread(&structSymTable, sizeof(structSymTable), 1, fichierElf))
+	while(i<structElf32.e_shnum && section.sh_type != nomSection){
+		if (!fread(&section, sizeof(section), 1, fichierElf))
 		{
 			printf("Impossible de lire le header des sections.\n");
 			exit(1);
@@ -105,5 +109,5 @@ Elf32_Shdr accesSectionTableSymboles(Elf32_Ehdr structElf32, FILE * fichierElf){
 		i++;
 	}
 
-	return structSymTable;
+	return section;
 }
