@@ -42,6 +42,21 @@ char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
   return tabNomSection;
 
 }
+FILE * ouvrirFichier(char * nomFichier){
+
+    FILE* fichierElf = NULL;
+
+    fichierElf = fopen ( argv, "rb" );
+
+    if (fichierElf==NULL)
+    {
+        printf ("\nFile error");
+        exit (1);
+    }
+    
+    return fichierElf;
+
+}
 
 Elf32_Ehdr lireHeaderElf(char *argv[]){
 

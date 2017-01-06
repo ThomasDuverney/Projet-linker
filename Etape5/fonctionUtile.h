@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <elf.h>
 
+FILE * ouvrirFichier(char * nomFichier);
+
 char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf);
 
 char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf);

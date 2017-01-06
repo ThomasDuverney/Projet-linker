@@ -23,6 +23,23 @@ char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf){
 
 }
 
+FILE * ouvrirFichier(char * nomFichier){
+
+    FILE* fichierElf = NULL;
+
+    fichierElf = fopen (nomFichier, "rb" );
+
+    if (fichierElf==NULL)
+    {
+        printf ("\nFile error");
+        exit (1);
+    }
+    
+    return fichierElf;
+
+}
+
+
 char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
 
 
@@ -43,18 +60,9 @@ char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
 
 }
 
-Elf32_Ehdr lireHeaderElf(char *argv[]){
+Elf32_Ehdr lireHeaderElf(FILE * fichierElf){
 
-    FILE* fichierElf = NULL;
     Elf32_Ehdr structElf32;
-
-    fichierElf = fopen ( argv[1], "rb" );
-
-    if (fichierElf==NULL)
-    {
-        printf ("\nFile error");
-        exit (1);
-    }
 
     if (!fread(&structElf32, sizeof(structElf32), 1, fichierElf))
     {

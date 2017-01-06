@@ -4,9 +4,11 @@
 
 char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf);
 
+FILE * ouvrirFichier(char * nomFichier);
+
 char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf);
 
-Elf32_Ehdr lireHeaderElf(char *argv[]);
+Elf32_Ehdr lireHeaderElf(FILE * fichierElf);
 
 Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf);
 

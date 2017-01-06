@@ -12,7 +12,7 @@ void fonctionEtape5(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,FILE * fichie
 
 int main(int argc, char *argv[]){
 
-	FILE* fichierElf = NULL;
+	FILE* fichierElf;
 
 	if(argc != 2){
     	printf("Syntaxe : ./etape3 file\n");
