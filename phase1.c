@@ -17,7 +17,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 	    printf("Magique :\t");
      
 	    for(int i=0;i<EI_NIDENT;++i) 
-		printf("%x",structElf32.e_ident[i]);
+		printf("%02x ",structElf32.e_ident[i]);
 		
 	// ------------LA CLASSE
 		printf("\nClass :\t");
@@ -29,7 +29,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 			printf("Invalid class\n");
 			
 	// ------------LES DONNEES
-		printf("\nDonnées :\t");
+		printf("Données :\t");
 		if(structElf32.e_ident[EI_DATA]==1)
 			printf("little Indian\n");
 		else if(structElf32.e_ident[EI_DATA] == 2)
@@ -66,7 +66,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 	       	  printf("SPARC\n");
 	    else if(structElf32.e_machine == 3)
 	    	  printf("Intel 80386\n");
-	    else if(structElf32.e_machine == 4)-h
+	    else if(structElf32.e_machine == 4)
 	    	  printf("Motorola 68000\n");
 	    else if(structElf32.e_machine == 5)
 	    	  printf("Motorola 88000\n");
@@ -80,13 +80,15 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 	// -----------LE TYPE 
 	    printf("Type :\t");   	  
 	    if(structElf32.e_type == 1)
-			printf("Relocatable\n");
+			printf("Relocatable (REL)\n");
 	    else if(structElf32.e_type == 2)
-			printf("Executable\n");
+			printf("Executable (EXEC)\n");
 	    else if(structElf32.e_type == 3)
-			printf("Shared Object\n");
+			printf("Shared Object file (DYN)\n");
+			else if(structElf32.e_type == 4)
+			printf("Core file (CORE) \n");
 	    else if(structElf32.e_type == 0)
-			printf("No file type\n");
+			printf("No file type (NONE)\n");
 	    else
 			printf("Inconnu ou non spécifie\n");
         
@@ -109,7 +111,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 	int i;
 	Elf32_Shdr structSectionHeader;
    	fseek(fichierElf,structElf32.e_shoff,0); 
-  	printf("N||Nom    ||Type    ||Addr    ||Décal ||Taille||ES||Fl||L||I||A\n");
+  	printf("N||%-18s||Type    ||Addr    ||Décal ||Taille||ES||Fl||L||I||A\n","Nom");
 
   	for(i=0;i<structElf32.e_shnum;i++){
   	
@@ -123,7 +125,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   		printf("%i||",i);
   		
   		//nom
-  		printf("%s||",lire_nom(structElf32,i,fichierElf));
+  		printf("%-18s||",lire_nom(structElf32,i,fichierElf));
   		
   		//Type
   		switch(structSectionHeader.sh_type){
@@ -220,7 +222,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   			r = strcat(r,"P");
   		if(strlen(r)==0)
   			r = strcat(r,"  ");
-  		printf("%s||",r);
+  		printf("%-2s||",r);
   		
   		//Link
   		printf("%i||",structSectionHeader.sh_link);

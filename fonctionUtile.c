@@ -127,7 +127,7 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
 	fread(contenuSection, 1, taille, fichierElf);
 
 	int i;
-	for(i=0;i<=taille;i++){
+	for(i=0;i<=taille-1;i++){
 
 		if(i%4 == 0 && i!=0){
 		  printf("     ");

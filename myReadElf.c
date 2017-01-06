@@ -14,7 +14,7 @@ int main (int argc, char *argv[]){
   if (argc>=3 && argv[1][0] == '-' && strlen(argv[1]) == 2){
 	  
 	    switch(argv[1][1]){
-
+		
 	    case 'h':
 	    
 	      if(argc == 3){
@@ -22,10 +22,10 @@ int main (int argc, char *argv[]){
 	      	 fichierElf = ouvrirFichier(argv[2]);
 	      	 structElf32 = lireHeaderElf(fichierElf);
 	      	 fonctionEtape1(structElf32);
-	      	 
+	     	 fclose(fichierElf);
 	      }else{
 	   
-	      	 printf(" Essayez myReadElf -h \"nomFichier\""); 
+	      	 printf(" Essayez myReadElf -h \"nomFichier\"\n"); 
 	   
 	      }
 	 
@@ -34,12 +34,12 @@ int main (int argc, char *argv[]){
 	    	if(argc == 3){
 	    	  
 	    	   fichierElf = ouvrirFichier(argv[2]);
-	      	   structElf32 = lireHeaderElf(fichierElf);
+	      		structElf32 = lireHeaderElf(fichierElf);
 			   fonctionEtape2(structElf32,fichierElf);
-
+			  fclose(fichierElf);
 			}else{
 
-	      	 	printf(" Essayez myReadElf -S \"nomFichier\""); 
+	      	 	printf(" Essayez myReadElf -S \"nomFichier\"\n"); 
 
 	      	}
 		  		   
@@ -51,10 +51,11 @@ int main (int argc, char *argv[]){
 	    		fichierElf = ouvrirFichier(argv[3]);
 	      	 	structElf32 = lireHeaderElf(fichierElf);
 	      	 	fonctionEtape3(fichierElf,argv[2],structElf32);
+	      	 	fclose(fichierElf);
 	    		
 	    	}else{
 	    		
-	    		printf("Essayez myReadElf -x \"numéroDeSection\" \"nomFichier\"");
+	    		printf("Essayez myReadElf -x \"numéroDeSection\" \"nomFichier\"\n");
 	    		
 	    	}
 	      
@@ -63,11 +64,11 @@ int main (int argc, char *argv[]){
 	      
 	      if(argc == 3){
 	      	
-	      	printf("Etape 4");
+	      	printf("Etape 4\n");
 	      	
 	      }else{
 	      	
-	      	printf("Essayez myReadElf -s \"nomFichier\"");
+	      	printf("Essayez myReadElf -s \"nomFichier\"\n");
 	      	
 	      }
 	      
@@ -79,20 +80,21 @@ int main (int argc, char *argv[]){
 	      	fichierElf = ouvrirFichier(argv[2]);
 	      	structElf32 = lireHeaderElf(fichierElf);
 	      	fonctionEtape5(structElf32,fichierElf);
-	      
+	      	fclose(fichierElf);
+	      	
 	      }else{
 	      	
-	      	printf("Essayez myReadElf -r \"nomFichier\"");	
+	      	printf("Essayez myReadElf -r \"nomFichier\"\n");	
 	      	
 	      }
 	      
 	      break;
 	    default:
-	      printf("Ne correspont à aucun type");
+	      printf("Ne correspond à aucun type\n");
 	      break;
 	      
 	  }
-	  fclose(fichierElf);
+
   }else{
   		printf("Utilisation de myReadElf : ./readElf -option ...\n");
   		printf("Options : -h <fichier> \t\t\t\t\t Affiche les infos contenu dans le header du fichier elf en paramètre\n");
