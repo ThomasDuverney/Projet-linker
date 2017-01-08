@@ -27,5 +27,8 @@ void afficherRelocation(int r_info,int r_offset);
 char * LireNomSymb(char * tabString, int indexSymb);
 
 char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf);
-
-
+/*
+Retourne un tableau de tout les headers de section du type donné en paramètre. Le type donné est le numéro de constant par exemple
+pour le type SHT_PROGBITS = 1 
+*/
+Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32);
