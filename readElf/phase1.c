@@ -224,7 +224,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   		if(strlen(r)==0)
   			r = strcat(r,"  ");
   		printf("%-2s||",r);
-
+      free(r);
   		//Link
   		printf("%i||",structSectionHeader.sh_link);
   		//Info
