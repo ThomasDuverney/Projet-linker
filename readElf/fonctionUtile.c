@@ -34,7 +34,7 @@ FILE * ouvrirFichier(char * nomFichier){
         printf ("\nFile error\n");
         exit (1);
     }
-    
+
     return fichierElf;
 
 }
@@ -121,22 +121,26 @@ Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Sh
 
 void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
 
-	char* contenuSection = malloc(taille);
+  if(taille>0){
+  	char* contenuSection = malloc(taille);
 
-	fseek(fichierElf,position, SEEK_SET);
-	fread(contenuSection, 1, taille, fichierElf);
+  	fseek(fichierElf,position, SEEK_SET);
+  	fread(contenuSection, 1, taille, fichierElf);
 
-	int i;
-	for(i=0;i<=taille-1;i++){
+  	int i;
+  	for(i=0;i<=taille-1;i++){
 
-		if(i%4 == 0 && i!=0){
-		  printf("     ");
-		}
-		if(i%16 == 0 && i!=0){
-			printf("\n");
-		}
-		printf("%02x",contenuSection[i]);
-	}
+  		if(i%4 == 0 && i!=0){
+  		  printf("     ");
+  		}
+  		if(i%16 == 0 && i!=0){
+  			printf("\n");
+  		}
+  		printf("%02x",contenuSection[i]);
+  	}
+  }else{
+    printf("Cette section n'a aucune donnée");
+  }
 }
 
 void afficherRelocation(int r_info,int r_offset){
@@ -144,7 +148,7 @@ void afficherRelocation(int r_info,int r_offset){
 	printf("\tInfo\t");
 	printf("\tType\t");
 	printf("\tVal.-Sym\n");
-	
+
 	printf("%08x\t",r_offset);
 	printf("%08x\t",r_info);
 
@@ -166,7 +170,7 @@ void afficherRelocation(int r_info,int r_offset){
 		case 28:
 			printf("R_ARM_CALL");
 			break;
-		case 29:	
+		case 29:
 			printf("R_ARM_JUMP24");
 			break;
 		default:
@@ -174,9 +178,9 @@ void afficherRelocation(int r_info,int r_offset){
 			break;
 	}
 	printf("\t");
-	
+
 	printf("%08x\t",ELF32_R_SYM(r_info));
-	
+
 	printf("\n");
 
 }
@@ -272,24 +276,24 @@ Elf32_Rela * tabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichier
 char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
 
 	Elf32_Shdr HdrTableString;
-	
+
 	HdrTableString = RechercheSectionByName(fichierElf,".strtab",tabHeaders,structElf32);
-	
+
 	Elf32_Off position = HdrTableString.sh_offset;
 	Elf32_Word  taille = HdrTableString.sh_size;
 	*size=taille;
-	
-	char * tabString = malloc(taille); 
-	
+
+	char * tabString = malloc(taille);
+
 	if( tabString == NULL ){
 		return NULL;
 	}
-	
-	fseek(fichierElf,position, SEEK_SET); 
+
+	fseek(fichierElf,position, SEEK_SET);
   	fread(tabString,1,taille,fichierElf);
-  	
+
   	return tabString;
-	
+
 	// RECHERCHE TABLE STRING .STRTAB
 	// LA REMPLIR GRACE A SON OFFSET ET SA TAILLE DANS UN TABLEAU CHAR AVEC FREAD
 	// UTILISER LE TABLEAU + INDEX SYMBOLE POUR TROUVER LE NOM DU SYMBOLE
@@ -299,6 +303,6 @@ char * LireNomSymb(char * tabString, int indexSymb){
 
 	char * nomSymb;
 	nomSymb = tabString + indexSymb;
-	
+
 	return nomSymb;
 }
