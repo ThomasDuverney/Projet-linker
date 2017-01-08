@@ -195,7 +195,22 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
     printf("Cette section n'a aucune donnée");
   }
 }
+char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
 
+  if(hdrSection.sh_size>0){
+    char* contenuSection = malloc(hdrSection.sh_size);
+    if(contenuSection == NULL){
+        return NULL;
+    }
+    fseek(fichierElf,hdrSection.sh_offset, SEEK_SET);
+    fread(contenuSection, 1, hdrSection.sh_size, fichierElf);
+
+    return contenuSection;
+
+  }else{
+    return NULL;
+  }
+}
 void afficherRelocation(int r_info,int r_offset){
 	printf("offset\t");
 	printf("\tInfo\t");
@@ -359,4 +374,24 @@ char * LireNomSymb(char * tabString, int indexSymb){
 	nomSymb = tabString + indexSymb;
 
 	return nomSymb;
+}
+
+void remplirStructure(FILE * fichier,ContenuElf * contenuElf){
+  int i;
+	contenuElf->fichierElf = fichier;
+  contenuElf->hdrElf = lireHeaderElf(fichier);
+  contenuElf->tabSections = malloc(contenuElf->hdrElf.e_shnum*sizeof(SectionInfos));
+
+  Elf32_Shdr *  tableHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
+
+  for(i=0;i<contenuElf->hdrElf.e_shnum;i++){
+      SectionInfos sectionInfos;
+      sectionInfos.tabHdrSections=tableHeaders[i];
+      sectionInfos.nomSection=lire_nom(contenuElf->hdrElf,i,fichier);
+      sectionInfos.contenuSection=RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
+      contenuElf->tabSections[i]=sectionInfos;
+  }
+
+  //contenuELf->tableString = AccesTableString(tabHeaders,contenuELf1->hdrElf,int * size,fichierElf);
+
 }
