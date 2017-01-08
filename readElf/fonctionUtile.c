@@ -53,6 +53,11 @@ char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
 
   // next, read the section, string data
   tabNomSection = malloc(sectHdr.sh_size);
+  if(tabNomSection == NULL){
+    printf("Erreur alocation AccesTableNomSection ");
+    return NULL;
+  }
+
   fseek(fichierElf, sectHdr.sh_offset, SEEK_SET); //REVIENT DEBUT SECTION
   fread(tabNomSection, 1, sectHdr.sh_size, fichierElf);
 
@@ -75,10 +80,11 @@ Elf32_Ehdr lireHeaderElf(FILE * fichierElf){
 
 
 Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf){
-
+  Elf32_Shdr structSectionHeader;
+  int i;
 	Elf32_Shdr * tabHeaders = malloc(sizeof(Elf32_Shdr)*structElf32.e_shoff);
-	Elf32_Shdr structSectionHeader;
-	int i;
+  if(tabHeaders == NULL)
+    return NULL;
 
 	fseek(fichierElf,structElf32.e_shoff,0);
 
@@ -123,6 +129,10 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
 
   if(taille>0){
   	char* contenuSection = malloc(taille);
+    if(contenuSection == NULL){
+      printf("Erreur d'allocations dans afficheSection");
+      exit(1);
+    }
 
   	fseek(fichierElf,position, SEEK_SET);
   	fread(contenuSection, 1, taille, fichierElf);
@@ -138,6 +148,7 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
   		}
   		printf("%02x",contenuSection[i]);
   	}
+      free(contenuSection);
   }else{
     printf("Cette section n'a aucune donnée");
   }
@@ -286,6 +297,7 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 	char * tabString = malloc(taille);
 
 	if( tabString == NULL ){
+    printf("Erreur d'allocation AccesTableString");
 		return NULL;
 	}
 
