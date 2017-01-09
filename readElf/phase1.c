@@ -103,7 +103,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 	    printf("Table d'indexes des chaînes d'en-tête de section :\t %i\n",structElf32.e_shstrndx);
 
     }
-
+	printf("\n\n");
 }
 void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 
@@ -113,7 +113,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 	Elf32_Shdr structSectionHeader;
    	fseek(fichierElf,structElf32.e_shoff,0);
 
-  	printf("N||%-18s||Type    ||Addr    ||Décal ||Taille||ES||Fl||L||I||A\n","Nom");
+  	printf("N ||%-18s||Type    ||Addr    ||Décal ||Taille||ES||Fl||L ||I ||A\n","Nom");
 
   	for(i=0;i<structElf32.e_shnum;i++){
 
@@ -124,7 +124,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   		}
 
 		//Numéro
-  		printf("%i||",i);
+  		printf("%-2i||",i);
 
   		//nom
   		printf("%-18s||",lire_nom(structElf32,i,fichierElf,TableNomSection));
@@ -227,11 +227,11 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   		printf("%-2s||",r);
       free(r);
   		//Link
-  		printf("%i||",structSectionHeader.sh_link);
+  		printf("%-2i||",structSectionHeader.sh_link);
   		//Info
-  		printf("%i||",structSectionHeader.sh_info);
+  		printf("%-2i||",structSectionHeader.sh_info);
   		//Allignement
-  		printf("%i",structSectionHeader.sh_addralign);
+  		printf("%-2i",structSectionHeader.sh_addralign);
 
 
   	printf("\n");
@@ -239,6 +239,8 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   	}
 	free(TableNomSection);
    	printf("\nN = Numéro, Fl = Flags, L = Link, I = Info, A = Allignement\n");
+
+	printf("\n\n");
 
 }
 
@@ -264,6 +266,8 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	printf("\n");
 	free(tabHeaders);
 	free(TableNomSection);
+
+	printf("\n\n");
 }
 
 void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
@@ -282,14 +286,14 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
 	char * tabString;
 	int size;
 
-	tabString = AccesTableString(tabHeaders,structElf32,&size,fichierElf);
+	tabString = AccesTableString(tabHeaders,structElf32,&size,fichierElf,TableNomSection);
 
 	fseek(fichierElf,structSymTable.sh_offset,0);
 
 	for(int i=0; i<symTableSize; i++){
 		fread(&symbole, sizeof(symbole), 1, fichierElf);
 		// Affichage du numéro de section
-		printf("  %d    ||", i);
+		printf("  %-2d   ||", i);
 
 		// Affichage de la valeur
 		printf("%8.8x||", symbole.st_value);
@@ -360,6 +364,8 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
   free(tabString);
   free(tabHeaders);
   free(TableNomSection);
+
+		printf("\n\n");
 }
 
 void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
@@ -408,4 +414,6 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
 	}
   free(tabReal);
   free(tabHeaders);
+
+		printf("\n\n");
 }

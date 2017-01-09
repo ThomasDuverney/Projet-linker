@@ -105,14 +105,12 @@ Elf32_Shdr * accesTableDesHeaders(Elf32_Ehdr structElf32, FILE * fichierElf){
 Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,char* TableNomSection){
 
 	int j = 0;
-	TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	char * tempNom =lire_nom(structElf32,j,fichierElf,TableNomSection);
 
 	while(j<structElf32.e_shnum && strcmp(nomSection,tempNom)){
 		j++;
 		tempNom =lire_nom(structElf32,j,fichierElf,TableNomSection);
 	}
-	free(TableNomSection);
 
 	if( j == structElf32.e_shnum){
 		printf("Le nom de section recherché n'est pas disponible dans ce fichier");
@@ -341,10 +339,9 @@ Elf32_Rela * tabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichier
 
 }
 
-char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf){
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection){
 
 	Elf32_Shdr HdrTableString;
-	char * TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	HdrTableString = RechercheSectionByName(fichierElf,".strtab",tabHeaders,structElf32,TableNomSection);
 
 	Elf32_Off position = HdrTableString.sh_offset;
@@ -360,7 +357,6 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 
 	fseek(fichierElf,position, SEEK_SET);
   	fread(tabString,1,taille,fichierElf);
-	free(TableNomSection);
 
   	return tabString;
 
