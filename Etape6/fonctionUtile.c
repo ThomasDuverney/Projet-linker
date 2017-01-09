@@ -124,33 +124,35 @@ Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Sh
 	}
 
 }
-Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32){
+
+SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * contenuElf){
 
   int j = 0;
-  Elf32_Shdr * tabSection;
+  SectionInfos * tabSectionType;
   *size=0;
 
-  while(j<structElf32.e_shnum){
-    if(typeSection == tabHeaders[j].sh_type){
+  while(j<contenuElf->hdrElf.e_shnum){
+    
+    if(typeSection == contenuElf->tabSections[j].tabHdrSections.sh_type){
         if(*size == 0){
 
-            tabSection=malloc(sizeof(Elf32_Shdr));
-            if( tabSection == NULL ){
+            tabSectionType=malloc(sizeof(SectionInfos));
+            if( tabSectionType == NULL ){
               return NULL;
             }
             else{
-              tabSection[*size] = tabHeaders[j];
+              tabSectionType[*size] = contenuElf->tabSections[j];
               (*size)++;
             }
         }else{
-            Elf32_Shdr * tabTemp;
-            tabTemp=realloc(tabSection,sizeof(Elf32_Shdr)*(*size+1));
+            SectionInfos * tabTemp;
+            tabTemp=realloc(tabSectionType,sizeof(SectionInfos)*(*size+1));
 
             if ( tabTemp == NULL){
               return NULL;
             }else{
-              tabSection=tabTemp;
-              tabSection[*size] = tabHeaders[j];
+              tabSectionType=tabTemp;
+              tabSectionType[*size] = contenuElf->tabSections[j];
               (*size)++;
             }
         }
@@ -158,12 +160,12 @@ Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size
     j++;
   }
 
-  if( *size== 0){
+  if( *size == 0){
     printf("Le type de section recherché n'est pas disponible dans ce fichier");
     exit (1);
 
   }else{
-    return tabSection;
+    return tabSectionType;
   }
 }
 

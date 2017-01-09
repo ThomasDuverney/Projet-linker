@@ -25,8 +25,10 @@ typedef struct {
 }ContenuElf;
 
 typedef struct {
-        ContenuElf * ContenuElf1;
-        ContenuElf * ContenuElf2;
+        ContenuElf * contenuElf1;
+        ContenuElf * contenuElf2;
+        ContenuElf * contenuElfFinal;
+        
 } ContenuFus;
 
 /*
@@ -84,6 +86,6 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 Retourne un tableau de tout les headers de section du type donné en paramètre. Le type donné est le numéro de constant par exemple
 pour le type SHT_PROGBITS = 1,  taille du tableau retourner est passé par référence.
 */
-Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32);
+SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * contenuElf);
 	
 void remplirStructure(FILE * fichier,ContenuElf * contenuElf);
