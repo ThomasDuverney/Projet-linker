@@ -18,63 +18,71 @@ int main(int argc,char* argv[]){
 		exit(1);
 
 	}
-	
+
 	fichDest = ouvrirFichier(argv[1]);
 	secondFich = ouvrirFichier(argv[2]);
 
 	ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
-	
+
 	contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));
 	contenuFus->contenuElf2 = malloc(sizeof(ContenuElf));
 	contenuFus->contenuElfFinal = malloc(sizeof(ContenuElf));
-	
+
 	remplirStructure(fichDest,contenuFus->contenuElf1);
 	remplirStructure(secondFich,contenuFus->contenuElf2);
-	
+
 	SectionInfos * tabSectionProgb1;
 	SectionInfos * tabSectionProgb2;
-	
+
 	tabSectionProgb1 = RechercheSectionByType(SHT_PROGBITS,&size1,contenuFus->contenuElf1);
 	tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,&size2,contenuFus->contenuElf2);
-		
-	int i,k;
+
+	int i,k,flag = 0;
+	int * tabWrited = malloc(size2+size1);
+	int sizeWrited, newSectionSize =0;
+
 	contenuFus->contenuElfFinal->sizeSections = 0;
 
 	for(k=0;k<size1;k++){
-		
+
 		for(i=0;i<size2;i++){
-		
+
+			//printf("%s\n",tabSectionProgb2[i].nomSection);
 			if(strcmp(tabSectionProgb1[k].nomSection,tabSectionProgb2[i].nomSection) == 0){
-	
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
 				CopieSectionInfos(contenuFus,tabSectionProgb1[k]);
-	
-			}else{
-				CopieSectionInfos(contenuFus,tabSectionProgb1[k]);
-			}
-		}
-		
-	}
-/*
-	for(k=0;k<size2;k++){
-	
-		for(i=0;i<size1;i++){
-		
-			if(strcmp(tabSectionProgb1[k].nomSection,tabSectionProgb2[i].nomSection) != 0){
-				
-				//Ajout de la nouvelle section et nouveau header section dans le contenuElf3 avec tabSectionProgb2[k]
-				
-			}
-		}
-		
-	}*/
+			  newSectionSize = tabSectionProgb1[k].tabHdrSections.sh_size + tabSectionProgb2[i].tabHdrSections.sh_size;
+				char * tabTemp = realloc(tabSectionProgb1[k].contenuSection,newSectionSize);
+				if(tabTemp!=NULL){
+					tabTemp =
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
+					//contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection =
 
-	printf("première :%s",contenuFus->contenuElfFinal->tabSections[0].nomSection);
-	printf(" deuxième : %s",contenuFus->contenuElfFinal->tabSections[1].nomSection);
-	//printf("%s",contenuFus->contenuElfFinal->tabSections[2].nomSection);
-	//printf("%s",contenuFus->contenuElfFinal->tabSections[3].nomSection);
-	//printf("%s",contenuFus->contenuElfFinal->tabSections[4].nomSection);
-	
+					flag = 1;
+					tabWrited[sizeWrited]=i;
+					sizeWrited++;
+				}
+			}
+		}
+		if(flag == 0){
+					CopieSectionInfos(contenuFus,tabSectionProgb1[k]);
+		}
+
+	}
+	for(k=0;k<size2;k++){
+		i=0;
+		while(i<sizeWrited && tabWrited[i] != k){
+			i++;
+		}
+		if(sizeWrited == i){
+			CopieSectionInfos(contenuFus,tabSectionProgb2[k]);
+		}
+	}
+	free(tabWrited);
+
+	for(i=0;i<contenuFus->contenuElfFinal->sizeSections;i++)
+			printf("%s",contenuFus->contenuElfFinal->tabSections[i].nomSection);
+
 	fclose(fichDest);
 	fclose(secondFich);
 	return 0;
@@ -83,26 +91,25 @@ int main(int argc,char* argv[]){
 /*
 void EcrireSection(ContenuElf * contenuElf,int numSection){
 
-       
+
        fwrite(contenuElf->tabSections[numSection].contenuSection,1,contenuElf->tabSections.tabHdrSections.sh_size,contenuElf->fichierElf);
-       
+
 
 
 }*/
 
 
-// Parcours les PROGBITS 
+// Parcours les PROGBITS
 
 
 void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 
-				
+
 				if(contenuFus->contenuElfFinal->sizeSections == 0){
 					contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
 					if( contenuFus->contenuElfFinal->tabSections  != NULL){
 						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
 						contenuFus->contenuElfFinal->sizeSections++;
-						printf("Je rentre une fois");
 					}
 
 				}else{
@@ -110,17 +117,15 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 					tabTemp=realloc(contenuFus->contenuElfFinal->tabSections,sizeof(SectionInfos)*(contenuFus->contenuElfFinal->sizeSections+1));
 
 					if ( tabTemp != NULL){
-					
+
 						contenuFus->contenuElfFinal->tabSections=tabTemp;
 						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
 						contenuFus->contenuElfFinal->sizeSections++;
-					
+
 					}
 				}
-				
-				printf("%i",contenuFus->contenuElfFinal->sizeSections);
-}	
+}
 /*
 void ConcaContenuSection(char * contenuSection1,char * contenuSection2){
-	
+
 }*/
