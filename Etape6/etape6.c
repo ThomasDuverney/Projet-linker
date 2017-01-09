@@ -15,13 +15,20 @@ int main(int argc,char* argv[]){
 		exit(1);
 
 	}
+	
 	fichDest = ouvrirFichier(argv[1]);
 	secondFich = ouvrirFichier(argv[2]);
+	
+	ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
+	
+	contenuFus->ContenuElf1 = malloc(sizeof(ContenuElf));
+	contenuFus->ContenuElf2 = malloc(sizeof(ContenuElf));
+	
+	remplirStructure(fichDest,contenuFus->ContenuElf1);
+	remplirStructure(secondFich,contenuFus->ContenuElf2);
+	
+	printf("%s",contenuFus->ContenuElf1->tabSections[5].nomSection);
 
-	ContenuElf * contenuElf = malloc(sizeof(ContenuElf));
-
-	remplirStructure(fichDest,contenuElf);
-	printf("%s",contenuElf->tabSections[5].nomSection);
 	fclose(fichDest);
 	fclose(secondFich);
 	return 0;

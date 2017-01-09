@@ -377,21 +377,32 @@ char * LireNomSymb(char * tabString, int indexSymb){
 }
 
 void remplirStructure(FILE * fichier,ContenuElf * contenuElf){
-  int i;
-	contenuElf->fichierElf = fichier;
-  contenuElf->hdrElf = lireHeaderElf(fichier);
-  contenuElf->tabSections = malloc(contenuElf->hdrElf.e_shnum*sizeof(SectionInfos));
 
-  Elf32_Shdr *  tableHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
+  int i;
+  int sizeTabString,sizeTabReloc;
+
+  contenuElf->fichierElf = fichier;
+  contenuElf->hdrElf = lireHeaderElf(fichier);
+
+  contenuElf->tabSections = malloc(contenuElf->hdrElf.e_shnum*sizeof(SectionInfos));
+  if( contenuElf->tabSections == NULL){
+  	printf("Erreur Allocation");
+  	exit(1);
+  }
+  	
+  Elf32_Shdr *  tabHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
 
   for(i=0;i<contenuElf->hdrElf.e_shnum;i++){
       SectionInfos sectionInfos;
-      sectionInfos.tabHdrSections=tableHeaders[i];
-      sectionInfos.nomSection=lire_nom(contenuElf->hdrElf,i,fichier);
-      sectionInfos.contenuSection=RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
-      contenuElf->tabSections[i]=sectionInfos;
+      sectionInfos.tabHdrSections = tabHeaders[i];
+      sectionInfos.nomSection = lire_nom(contenuElf->hdrElf,i,fichier);
+      sectionInfos.contenuSection= RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
+      contenuElf->tabSections[i] = sectionInfos;
   }
-
-  //contenuELf->tableString = AccesTableString(tabHeaders,contenuELf1->hdrElf,int * size,fichierElf);
-
+  
+  contenuElf->tableString =AccesTableString(tabHeaders,contenuElf->hdrElf,&sizeTabString,fichier);
+  contenuElf->sizeTabString = sizeTabString;
+  contenuElf->tabRelocation=rechercherTablesReimplentation(tabHeaders,contenuElf->hdrElf, &sizeTabReloc,fichier);
+  
+  
 }
