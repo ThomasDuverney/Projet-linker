@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror
+CFLAGS=-Wall -Werror -g
 
 myReadElf: myReadElf.o fonctionUtile.o phase1.o
 	$(CC) -o myReadElf myReadElf.o fonctionUtile.o phase1.o

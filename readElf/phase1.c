@@ -109,6 +109,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 
 	//structElf32.e_shentsize <=> taille de la table des sections
 	int i;
+	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	Elf32_Shdr structSectionHeader;
    	fseek(fichierElf,structElf32.e_shoff,0);
 
@@ -126,7 +127,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   		printf("%i||",i);
 
   		//nom
-  		printf("%-18s||",lire_nom(structElf32,i,fichierElf));
+  		printf("%-18s||",lire_nom(structElf32,i,fichierElf,TableNomSection));
 
   		//Type
   		switch(structSectionHeader.sh_type){
@@ -236,19 +237,21 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   	printf("\n");
 
   	}
+	free(TableNomSection);
    	printf("\nN = Numéro, Fl = Flags, L = Link, I = Info, A = Allignement\n");
 
 }
 
 void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
-
+	
+	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
 
 	if(isdigit(*section) == 0){
 
-		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32);
+		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32,TableNomSection);
 		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
 
 	}else{
@@ -260,6 +263,7 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 
 	printf("\n");
 	free(tabHeaders);
+	free(TableNomSection);
 }
 
 void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
@@ -267,9 +271,10 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
 	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
 
 	// On cherche la table des symboles
+	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	Elf32_Shdr structSymTable;
 	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32);
+	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32, TableNomSection);
 
 	int symTableSize = structSymTable.sh_size/structSymTable.sh_entsize;
 	Elf32_Sym symbole;
@@ -354,6 +359,7 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
 	}
   free(tabString);
   free(tabHeaders);
+  free(TableNomSection);
 }
 
 void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
@@ -401,4 +407,5 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
 			exit(1);
 	}
   free(tabReal);
+  free(tabHeaders);
 }
