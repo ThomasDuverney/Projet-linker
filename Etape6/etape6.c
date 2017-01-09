@@ -38,8 +38,10 @@ int main(int argc,char* argv[]){
 	tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,&size2,contenuFus->contenuElf2);
 
 	int i,k,flag = 0;
+	int sizeWrited =0;
+	int newSectionSize = 0;
 	int * tabWrited = malloc(size2+size1);
-	int sizeWrited, newSectionSize =0;
+
 
 	contenuFus->contenuElfFinal->sizeSections = 0;
 
@@ -52,16 +54,33 @@ int main(int argc,char* argv[]){
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
 				CopieSectionInfos(contenuFus,tabSectionProgb1[k]);
 			  newSectionSize = tabSectionProgb1[k].tabHdrSections.sh_size + tabSectionProgb2[i].tabHdrSections.sh_size;
-				char * tabTemp = realloc(tabSectionProgb1[k].contenuSection,newSectionSize);
+			  char * tabTemp = realloc(tabSectionProgb1[k].contenuSection,newSectionSize);
 				if(tabTemp!=NULL){
-					tabTemp =
-					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
-					//contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection =
 
+					int j;
+					for(j=0;j<tabSectionProgb2[i].tabHdrSections.sh_size;j++){
+							tabTemp[tabSectionProgb1[k].tabHdrSections.sh_size+j]=tabSectionProgb2[i].contenuSection[j];
+					}
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
+						int z;
+						for(z=0;z<newSectionSize;z++){
+							if(z%4 == 0 && z!=0){
+								printf("     ");
+							}
+							if(z%16 == 0 && z!=0){
+								printf("\n");
+							}
+							printf("%x",contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection[z]);
+						}
+						//MODIFIER LA TAILLE DANS LE SECTION HEARDER
+						// CHANGER LA FONCTION AFFICHE SECTION METTRE EN PARAMETRE UN CONTENU DE SECTION
+						// PROBLEME AFFICHAGE SECTION
+						exit(1);
 					flag = 1;
 					tabWrited[sizeWrited]=i;
 					sizeWrited++;
-				}
+
+			  }
 			}
 		}
 		if(flag == 0){
@@ -124,6 +143,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 
 					}
 				}
+			//	printf("%s",sectionInfos.nomSection);
 }
 /*
 void ConcaContenuSection(char * contenuSection1,char * contenuSection2){
