@@ -138,7 +138,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   				printf("PROGBITS");
   				break;
   			case SHT_SYMTAB:
-  				printf("SYMTAB ");
+  				printf("SYMTAB  ");
   				break;
   			case SHT_STRTAB:
   				printf("STRTAB  ");
