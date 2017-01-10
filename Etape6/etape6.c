@@ -74,7 +74,7 @@ int main(int argc,char* argv[]){
 						printf("%x",contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection[z]);
 					}
 						
-					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].tabHdrSections.sh_shize = newSectionSize;
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].tabHdrSections.sh_size = newSectionSize;
 						//MODIFIER LA TAILLE DANS LE SECTION HEARDER
 						// CHANGER LA FONCTION AFFICHE SECTION METTRE EN PARAMETRE UN CONTENU DE SECTION
 						// PROBLEME AFFICHAGE SECTION
