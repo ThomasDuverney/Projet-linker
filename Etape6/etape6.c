@@ -6,6 +6,8 @@
 
 void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos);
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus);
+void afficherVerifFusion(ContenuElf* contenuElf);
+
 int main(int argc,char* argv[]){
 
 	FILE* fichDest = NULL;
@@ -30,6 +32,7 @@ int main(int argc,char* argv[]){
 
 	remplirStructure(fichDest,contenuFus->contenuElf1);
 	remplirStructure(secondFich,contenuFus->contenuElf2);
+	
 
 	SectionInfos * tabSectionProgb1;
 	SectionInfos * tabSectionProgb2;
@@ -39,6 +42,15 @@ int main(int argc,char* argv[]){
 	
 	fusionSection(tabSectionProgb1,tabSectionProgb2,size1,size2,contenuFus);
 	
+	// Affichage des sections
+	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
+	afficherVerifFusion(contenuFus->contenuElf1);
+
+	printf("\x1b[34mAffichage des sections du fichier 2 \x1b[0m\n");
+	afficherVerifFusion(contenuFus->contenuElf2);
+
+	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
+	afficherVerifFusion(contenuFus->contenuElfFinal);
 	
 	fclose(fichDest);
 	fclose(secondFich);
@@ -76,7 +88,6 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 	int sizeWrited = 0;
 	int newSectionSize = 0;
 	int * tabWrited = malloc(size2+size1);
-
 
 	contenuFus->contenuElfFinal->sizeSections = 0;
 
@@ -123,6 +134,12 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 	free(tabWrited);
 }
 
-void afficherEtape6(ContenuFus * contenuFus){
-
+void afficherVerifFusion(ContenuElf* contenuElf){
+		for(int i=0; i<contenuElf->sizeSections; i++){
+			printf("Section %s :\n", contenuElf->tabSections[i].nomSection);
+			afficheSection(contenuElf->tabSections[i].contenuSection, contenuElf->tabSections[i].tabHdrSections.sh_size, contenuElf->fichierElf);	
+			printf("\n\n");	
+		}	
+		printf("\n");	
 }
+

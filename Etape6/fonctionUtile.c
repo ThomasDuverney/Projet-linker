@@ -182,7 +182,7 @@ void afficheSection(unsigned char * contenuSection,Elf32_Word  taille,FILE * fic
   		printf("%02x",contenuSection[i]);
   	}
   }else{
-    printf("Cette section n'a aucune donnée");
+    printf("Cette section n'a aucune donnée\n");
   }
 }
 
