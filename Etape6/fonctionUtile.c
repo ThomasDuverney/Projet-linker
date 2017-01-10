@@ -409,7 +409,8 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
   	printf("Erreur Allocation");
   	exit(1);
   }
-
+  
+  contenuElf->sizeSections = contenuElf->hdrElf.e_shnum;
   for(i=0;i<contenuElf->hdrElf.e_shnum;i++){
       SectionInfos sectionInfos;
       sectionInfos.tabHdrSections = (*TabHeaders)[i];

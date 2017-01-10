@@ -409,8 +409,9 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
   	printf("Erreur Allocation");
   	exit(1);
   }
-
-  for(i=0;i<contenuElf->hdrElf.e_shnum;i++){
+  contenuElf->sizeSections = contenuElf->hdrElf.e_shnum;
+  
+  for(i=0;i<contenuElf->sizeSections;i++){
       SectionInfos sectionInfos;
       sectionInfos.tabHdrSections = (*TabHeaders)[i];
       sectionInfos.nomSection = lire_nom(contenuElf->hdrElf,i,fichier,contenuElf->TableNomSection);
@@ -418,6 +419,7 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
       contenuElf->tabSections[i] = sectionInfos;
   }
   
+ 
 }
 
 
