@@ -105,11 +105,9 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
     }
 	printf("\n\n");
 }
-void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
+void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf,char* TableNomSection,Elf32_Shdr * TabHeaders){
 
-	//structElf32.e_shentsize <=> taille de la table des sections
 	int i;
-	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
 	Elf32_Shdr structSectionHeader;
    	fseek(fichierElf,structElf32.e_shoff,0);
 
@@ -117,12 +115,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
 
   	for(i=0;i<structElf32.e_shnum;i++){
 
-  		if (!fread(&structSectionHeader, sizeof(structSectionHeader), 1, fichierElf))
-  		{
-    		printf("failed to read elf section header\n");
-    		exit(1);
-  		}
-
+		structSectionHeader = TabHeaders[i];
 		//Numéro
   		printf("%-2i||",i);
 
@@ -237,17 +230,14 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf){
   	printf("\n");
 
   	}
-	free(TableNomSection);
    	printf("\nN = Numéro, Fl = Flags, L = Link, I = Info, A = Allignement\n");
 
 	printf("\n\n");
 
 }
 
-void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
+void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders){
 	
-	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
-	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
 
@@ -266,32 +256,17 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	}
 
 	printf("\n");
-	free(tabHeaders);
-	free(TableNomSection);
 }
 
-void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
+void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders,Elf32_Sym * tabSymb,int symTableSize,char * tabString){
 
+	Elf32_Sym symbole;
+	
 	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
 
-	// On cherche la table des symboles
-	char* TableNomSection = AccesTableNomSection(structElf32,fichierElf);
-	Elf32_Shdr structSymTable;
-	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32, TableNomSection);
-
-	int symTableSize = structSymTable.sh_size/structSymTable.sh_entsize;
-	Elf32_Sym symbole;
-
-	char * tabString;
-	int size;
-
-	tabString = AccesTableString(tabHeaders,structElf32,&size,fichierElf,TableNomSection);
-
-	fseek(fichierElf,structSymTable.sh_offset,0);
-
 	for(int i=0; i<symTableSize; i++){
-		fread(&symbole, sizeof(symbole), 1, fichierElf);
+		symbole = tabSymb[i];
+
 		// Affichage du numéro de section
 		printf("  %-2d   ||", i);
 
@@ -361,59 +336,50 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
 		printf("\n");
 
 	}
-  free(tabString);
-  free(tabHeaders);
-  free(TableNomSection);
 
 		printf("\n\n");
 }
 
-void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf){
+void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHeaders,Elf32_Shdr * tabReal,int tabRealSize){
 
-	int size;
-	Elf32_Shdr * tabReal;
 	int i;
 	int j;
 	Elf32_Rel * tabSymRel; // Tableau symbole relocation rel
 	Elf32_Rela * tabSymRela;// Tableau symbole relocation rela
 
-	Elf32_Shdr * tabHeaders = accesTableDesHeaders(structElf32,fichierElf);
-
-	// CREATION TABLEAU DES HEADERS SECTION REIMPLENTATION
-	tabReal = rechercherTablesReimplentation(tabHeaders,structElf32, &size,fichierElf);
-
-	if(size!=0){
+	if(tabRealSize!=0){
 
 		// CREATION TABLEAU DES SYMBOLES POUR CHAQUE SECTION REALOCATION
-		for(i =0 ; i < size; i++){
+		for(i =0 ; i < tabRealSize; i++){
 
 			if(tabReal[i].sh_type == SHT_REL){
 
-					tabSymRel=tabSymboleRel(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
+				tabSymRel=AccesTabSymboleRel(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
 
-
-					for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
-						afficherRelocation(tabSymRel[j].r_info,tabSymRel[j].r_offset);
-					}
-          free(tabSymRel);
+				printf("offset\t");
+				printf("\tInfo\t");
+				printf("\tType\t");
+				printf("\tVal.-Sym\n");
+				for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
+					afficherRelocation(tabSymRel[j].r_info,tabSymRel[j].r_offset);
+				}
+				free(tabSymRel);
 			}
 			else{
-					tabSymRela=tabSymboleRela(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
+				tabSymRela=AccesTabSymboleRela(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
 
-					int j;
-					for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
-						afficherRelocation(tabSymRela[j].r_info,tabSymRela[j].r_offset);
-					}
+		
+				for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
+					afficherRelocation(tabSymRela[j].r_info,tabSymRela[j].r_offset);
+				}
 
-          free(tabSymRela);
+				free(tabSymRela);
 			}
 		}
 	}else{
 			printf("Ce fichier ne contient aucun repositionnement\n");
 			exit(1);
 	}
-  free(tabReal);
-  free(tabHeaders);
 
 		printf("\n\n");
 }

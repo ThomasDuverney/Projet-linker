@@ -19,7 +19,6 @@ void afficherParametres(){
 int main (int argc, char *argv[]){
 
   	FILE* fichierElf;
-	Elf32_Ehdr structElf32;
   
 	int opt;
 	static int do_header, do_sections, 
@@ -73,28 +72,33 @@ int main (int argc, char *argv[]){
 
 		// Ouverture du fichier
 		fichierElf = ouvrirFichier(argv[optind++]);
-		structElf32 = lireHeaderElf(fichierElf);
-
+	
+		ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
+		contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));	
+		
+		Elf32_Shdr * TabHeaders = NULL;
+		remplirStructure(fichierElf,contenuFus->contenuElf1,&TabHeaders);
+		
 		// Appel des fonctions nécessaires
 		if(do_header){
-			fonctionEtape1(structElf32);
+			fonctionEtape1(contenuFus->contenuElf1->hdrElf);
 		}
 	
 		if(do_sections){
-			fonctionEtape2(structElf32,fichierElf);
+			fonctionEtape2(contenuFus->contenuElf1->hdrElf,fichierElf,contenuFus->contenuElf1->TableNomSection,TabHeaders);
 		}	
 
 		if(do_hex_dump){
-			printf("Section : %s\n", sectionHexDump);
-			fonctionEtape3(fichierElf,sectionHexDump, structElf32);
+			fonctionEtape3(fichierElf,sectionHexDump,contenuFus->contenuElf1->hdrElf,contenuFus->contenuElf1->TableNomSection,TabHeaders);
 		}	
 
 		if(do_symbols){
-			fonctionEtape4(fichierElf,structElf32);
+			
+			fonctionEtape4(fichierElf,contenuFus->contenuElf1->hdrElf,contenuFus->contenuElf1->TableNomSection,TabHeaders,contenuFus->contenuElf1->tabSymb,contenuFus->contenuElf1->symTableSize,contenuFus->contenuElf1->tableString);
 		}	
 
 		if(do_relocs){
-			fonctionEtape5(structElf32,fichierElf);
+			fonctionEtape5(contenuFus->contenuElf1->hdrElf,fichierElf,TabHeaders,contenuFus->contenuElf1->tabRela,contenuFus->contenuElf1->tabRelaSize);
 		}
 	
 		// Fermeture du fichier

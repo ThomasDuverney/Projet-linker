@@ -20,7 +20,13 @@ typedef struct {
         char * tableString;
         int sizeTabString;
         
-        Elf32_Shdr * tabRelocation;
+        int symTableSize;
+  	Elf32_Sym * tabSymb;
+  	
+  	char * TableNomSection ;
+         
+        int tabRelaSize;
+        Elf32_Shdr * tabRela;
 
 }ContenuElf;
 
@@ -65,11 +71,11 @@ Elf32_Shdr *  rechercherTablesReimplentation(Elf32_Shdr * tabHeaders,Elf32_Ehdr 
 /*
 Renvoi un tableau des symbole d'une section de relocation de type Rel. la taille du tableau peut être calculé de cette manière: taille/sizeof(Elf32_Rel)
 */
-Elf32_Rel * tabSymboleRel(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf);
+Elf32_Rel * AccesTabSymboleRel(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf);
 /*
 Renvoi un tableau des symboles d'une section de relocation de type Rela. la taille du tableau peut être calculé de cette manière: taille/sizeof(Elf32_Rela)
 */
-Elf32_Rela * tabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf);
+Elf32_Rela * AccesTabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf);
 /*
 Affiche les information de rélocation d'un symbole
 */
@@ -82,14 +88,18 @@ char * LireNomSymb(char * tabString, int indexSymb);
 Retourne la table des string.
 */
 char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection);
+
+Elf32_Sym * AccesTableSymbole(FILE * fichierElf,Elf32_Ehdr structElf32,int * symTableSize,char* TableNomSection,Elf32_Shdr * tabHeaders);
 /*
 Retourne un tableau de tout les headers de section du type donné en paramètre. Le type donné est le numéro de constant par exemple
 pour le type SHT_PROGBITS = 1,  taille du tableau retourner est passé par référence.
 */
 SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * contenuElf);
 
-void remplirStructure(FILE * fichier,ContenuElf * contenuElf);
+void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHeaders);
 
 void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos);
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus);
+
+void afficherVerifFusion(ContenuElf* contenuElf);
