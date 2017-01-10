@@ -3,6 +3,7 @@
 #include <elf.h>
 #include <string.h>
 #include "fonctionUtile.h"
+#include "phase1.h"
 
 int main(int argc,char* argv[]){
 
@@ -36,6 +37,9 @@ int main(int argc,char* argv[]){
 	SectionInfos * tabSectionProgb2;
 		
 	tabSectionProgb1 = RechercheSectionByType(SHT_PROGBITS,&size1,contenuFus->contenuElf1);
+	
+	fonctionEtape2(contenuFus->contenuElf1->hdrElf,fichDest,contenuFus->contenuElf1->TableNomSection,TabHeaders1);
+	
 	printf("lol\n");
 	tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,&size2,contenuFus->contenuElf2);
 	printf("pouet\n");
