@@ -254,13 +254,15 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	if(isdigit(*section) == 0){
 
 		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32,TableNomSection);
-		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
+		char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
+		afficheSection(contenuSection,tempHed.sh_size,fichierElf);
+		free(contenuSection);
 
 	}else{
-
-		Elf32_Shdr tempHed = tabHeaders[atoi(section)];
-		afficheSection(tempHed.sh_offset,tempHed.sh_size,fichierElf);
-
+		tempHed = tabHeaders[atoi(section)];
+		char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
+		afficheSection(contenuSection,tempHed.sh_size,fichierElf);
+		free(contenuSection);
 	}
 
 	printf("\n");

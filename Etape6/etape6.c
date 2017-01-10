@@ -53,8 +53,9 @@ int main(int argc,char* argv[]){
 			if(strcmp(tabSectionProgb1[k].nomSection,tabSectionProgb2[i].nomSection) == 0){
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
 				CopieSectionInfos(contenuFus,tabSectionProgb1[k]);
-			  newSectionSize = tabSectionProgb1[k].tabHdrSections.sh_size + tabSectionProgb2[i].tabHdrSections.sh_size;
-			  char * tabTemp = realloc(tabSectionProgb1[k].contenuSection,newSectionSize);
+			 	newSectionSize = tabSectionProgb1[k].tabHdrSections.sh_size + tabSectionProgb2[i].tabHdrSections.sh_size;
+			    char * tabTemp = realloc(tabSectionProgb1[k].contenuSection,newSectionSize);
+			  
 				if(tabTemp!=NULL){
 
 					int j;
@@ -62,16 +63,18 @@ int main(int argc,char* argv[]){
 							tabTemp[tabSectionProgb1[k].tabHdrSections.sh_size+j]=tabSectionProgb2[i].contenuSection[j];
 					}
 					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
-						int z;
-						for(z=0;z<newSectionSize;z++){
-							if(z%4 == 0 && z!=0){
-								printf("     ");
-							}
-							if(z%16 == 0 && z!=0){
-								printf("\n");
-							}
-							printf("%x",contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection[z]);
+					int z;
+					for(z=0;z<newSectionSize;z++){
+						if(z%4 == 0 && z!=0){
+							printf("     ");
 						}
+						if(z%16 == 0 && z!=0){
+							printf("\n");
+						}
+						printf("%x",contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection[z]);
+					}
+						
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].tabHdrSections.sh_shize = newSectionSize;
 						//MODIFIER LA TAILLE DANS LE SECTION HEARDER
 						// CHANGER LA FONCTION AFFICHE SECTION METTRE EN PARAMETRE UN CONTENU DE SECTION
 						// PROBLEME AFFICHAGE SECTION
@@ -107,19 +110,6 @@ int main(int argc,char* argv[]){
 	return 0;
 
 }
-/*
-void EcrireSection(ContenuElf * contenuElf,int numSection){
-
-
-       fwrite(contenuElf->tabSections[numSection].contenuSection,1,contenuElf->tabSections.tabHdrSections.sh_size,contenuElf->fichierElf);
-
-
-
-}*/
-
-
-// Parcours les PROGBITS
-
 
 void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 
@@ -145,7 +135,4 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 				}
 			//	printf("%s",sectionInfos.nomSection);
 }
-/*
-void ConcaContenuSection(char * contenuSection1,char * contenuSection2){
 
-}*/

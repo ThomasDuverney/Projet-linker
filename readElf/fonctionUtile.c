@@ -29,7 +29,7 @@ FILE * ouvrirFichier(char * nomFichier){
 
     if (fichierElf==NULL)
     {
-        printf ("\nFile error\n");
+        printf ("\n Echec ouverture du fichier\n");
         exit (1);
     }
 
@@ -122,33 +122,35 @@ Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Sh
 	}
 
 }
-Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size, Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32){
+
+SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * contenuElf){
 
   int j = 0;
-  Elf32_Shdr * tabSection;
+  SectionInfos * tabSectionType;
   *size=0;
 
-  while(j<structElf32.e_shnum){
-    if(typeSection == tabHeaders[j].sh_type){
+  while(j<contenuElf->hdrElf.e_shnum){
+    
+    if(typeSection == contenuElf->tabSections[j].tabHdrSections.sh_type){
         if(*size == 0){
 
-            tabSection=malloc(sizeof(Elf32_Shdr));
-            if( tabSection == NULL ){
+            tabSectionType=malloc(sizeof(SectionInfos));
+            if( tabSectionType == NULL ){
               return NULL;
             }
             else{
-              tabSection[*size] = tabHeaders[j];
+              tabSectionType[*size] = contenuElf->tabSections[j];
               (*size)++;
             }
         }else{
-            Elf32_Shdr * tabTemp;
-            tabTemp=realloc(tabSection,sizeof(Elf32_Shdr)*(*size+1));
+            SectionInfos * tabTemp;
+            tabTemp=realloc(tabSectionType,sizeof(SectionInfos)*(*size+1));
 
             if ( tabTemp == NULL){
               return NULL;
             }else{
-              tabSection=tabTemp;
-              tabSection[*size] = tabHeaders[j];
+              tabSectionType=tabTemp;
+              tabSectionType[*size] = contenuElf->tabSections[j];
               (*size)++;
             }
         }
@@ -156,29 +158,20 @@ Elf32_Shdr * RechercheSectionByType(FILE * fichierElf,int typeSection,int * size
     j++;
   }
 
-  if( *size== 0){
+  if( *size == 0){
     printf("Le type de section recherché n'est pas disponible dans ce fichier");
     exit (1);
 
   }else{
-    return tabSection;
+    return tabSectionType;
   }
 }
 
-void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
+void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
 
-  if(taille>0){
-  	char* contenuSection = malloc(taille);
-    if(contenuSection == NULL){
-      printf("Erreur d'allocations dans afficheSection");
-      exit(1);
-    }
-
-  	fseek(fichierElf,position, SEEK_SET);
-  	fread(contenuSection, 1, taille, fichierElf);
-
+  if(contenuSection!= NULL){
   	int i;
-  	for(i=0;i<=taille-1;i++){
+  	for(i=0;i<taille;i++){
 
   		if(i%4 == 0 && i!=0){
   		  printf("     ");
@@ -188,11 +181,11 @@ void afficheSection(Elf32_Off position,Elf32_Word  taille,FILE * fichierElf){
   		}
   		printf("%02x",contenuSection[i]);
   	}
-      free(contenuSection);
   }else{
     printf("Cette section n'a aucune donnée");
   }
 }
+
 char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
 
   if(hdrSection.sh_size>0){
@@ -371,24 +364,37 @@ char * LireNomSymb(char * tabString, int indexSymb){
 }
 
 void remplirStructure(FILE * fichier,ContenuElf * contenuElf){
-  int i;  
+
+  int i;
+  int sizeTabString,sizeTabReloc;
 
   contenuElf->fichierElf = fichier;
   contenuElf->hdrElf = lireHeaderElf(fichier);
+  
+  // CHARGER TABLE NOM SECTION DANS LA STRUCTURE
+  char * TableNomSection = AccesTableNomSection(contenuElf->hdrElf, fichier);
+  //
+  
   contenuElf->tabSections = malloc(contenuElf->hdrElf.e_shnum*sizeof(SectionInfos));
-
-  char* TableNomSection = AccesTableNomSection(contenuElf->hdrElf,contenuElf->fichierElf);
-  Elf32_Shdr *  tableHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
+  if( contenuElf->tabSections == NULL){
+  	printf("Erreur Allocation");
+  	exit(1);
+  }
+  	
+  Elf32_Shdr *  tabHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
 
   for(i=0;i<contenuElf->hdrElf.e_shnum;i++){
       SectionInfos sectionInfos;
-      sectionInfos.tabHdrSections=tableHeaders[i];
-      sectionInfos.nomSection=lire_nom(contenuElf->hdrElf,i,fichier,TableNomSection);
-      sectionInfos.contenuSection=RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
-      contenuElf->tabSections[i]=sectionInfos;
+      sectionInfos.tabHdrSections = tabHeaders[i];
+      sectionInfos.nomSection = lire_nom(contenuElf->hdrElf,i,fichier,TableNomSection);
+      sectionInfos.contenuSection= RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
+      contenuElf->tabSections[i] = sectionInfos;
   }
-	
-	free(TableNomSection);
-  //contenuELf->tableString = AccesTableString(tabHeaders,contenuELf1->hdrElf,int * size,fichierElf);
-
+  
+  contenuElf->tableString =AccesTableString(tabHeaders,contenuElf->hdrElf,&sizeTabString,fichier,TableNomSection);
+  contenuElf->sizeTabString = sizeTabString;
+  contenuElf->tabRelocation=rechercherTablesReimplentation(tabHeaders,contenuElf->hdrElf, &sizeTabReloc,fichier);
+  
+  
 }
+
