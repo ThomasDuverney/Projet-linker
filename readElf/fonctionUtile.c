@@ -167,7 +167,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
   }
 }
 
-void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
+void afficheSection(unsigned char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
 
   if(contenuSection!= NULL){
   	int i;
@@ -186,10 +186,10 @@ void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
   }
 }
 
-char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
+unsigned char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
 
   if(hdrSection.sh_size>0){
-    char* contenuSection = malloc(hdrSection.sh_size);
+    unsigned char * contenuSection = malloc(hdrSection.sh_size);
     if(contenuSection == NULL){
         return NULL;
     }
@@ -398,3 +398,80 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf){
   
 }
 
+
+void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
+
+
+	if(contenuFus->contenuElfFinal->sizeSections == 0){
+		contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
+		if( contenuFus->contenuElfFinal->tabSections  != NULL){
+			memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
+			contenuFus->contenuElfFinal->sizeSections++;
+		}
+
+	}else{
+		SectionInfos * tabTemp;
+		tabTemp=realloc(contenuFus->contenuElfFinal->tabSections,sizeof(SectionInfos)*(contenuFus->contenuElfFinal->sizeSections+1));
+
+		if ( tabTemp != NULL){
+
+			contenuFus->contenuElfFinal->tabSections=tabTemp;
+			memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
+			contenuFus->contenuElfFinal->sizeSections++;
+
+		}
+	}
+}
+
+
+void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus){
+
+	int i,k,flag;
+	int sizeWrited = 0;
+	int newSectionSize = 0;
+	int * tabWrited = malloc(size2+size1);
+
+
+	contenuFus->contenuElfFinal->sizeSections = 0;
+
+	for(k=0;k<size1;k++){
+
+		for(i=0;i<size2;i++){
+
+			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
+				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
+				CopieSectionInfos(contenuFus,tabSection1[k]);
+			 	newSectionSize = tabSection1[k].tabHdrSections.sh_size + tabSection2[i].tabHdrSections.sh_size;
+			    unsigned char * tabTemp = realloc(tabSection1[k].contenuSection,newSectionSize);
+			  
+				if(tabTemp!=NULL){
+
+					int j;
+					for(j=0;j<tabSection2[i].tabHdrSections.sh_size;j++){
+							tabTemp[tabSection1[k].tabHdrSections.sh_size+j]=tabSection2[i].contenuSection[j];
+					}
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
+					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].tabHdrSections.sh_size = newSectionSize;			
+					flag = 1;
+					tabWrited[sizeWrited]=i;
+					sizeWrited++;
+
+			  }
+			}
+		}
+		if(flag == 0){
+					CopieSectionInfos(contenuFus,tabSection1[k]);
+		}
+
+	}
+	for(k=0;k<size2;k++){
+		i=0;
+		while(i<sizeWrited && tabWrited[i] != k){
+			i++;
+		}
+		if(sizeWrited == i){
+			CopieSectionInfos(contenuFus,tabSection2[k]);
+		}
+	}
+	free(tabWrited);
+}

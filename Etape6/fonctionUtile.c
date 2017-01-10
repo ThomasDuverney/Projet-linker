@@ -167,7 +167,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
   }
 }
 
-void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
+void afficheSection(unsigned char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
 
   if(contenuSection!= NULL){
   	int i;
@@ -186,10 +186,10 @@ void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf){
   }
 }
 
-char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
+unsigned char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
 
   if(hdrSection.sh_size>0){
-    char* contenuSection = malloc(hdrSection.sh_size);
+    unsigned char * contenuSection = malloc(hdrSection.sh_size);
     if(contenuSection == NULL){
         return NULL;
     }

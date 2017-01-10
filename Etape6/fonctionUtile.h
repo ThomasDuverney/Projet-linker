@@ -5,7 +5,7 @@
 typedef struct {
         char * nomSection;
         Elf32_Shdr  tabHdrSections;
-        char * contenuSection;
+        unsigned char * contenuSection;
 } SectionInfos;
 
 
@@ -43,7 +43,7 @@ FILE * ouvrirFichier(char * nomFichier);
 char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf);
 
 /*Retourne le contenu d'une section*/
-char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf);
+unsigned char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf);
 
 Elf32_Ehdr lireHeaderElf(FILE * fichierElf);
 /*
@@ -57,7 +57,7 @@ Elf32_Shdr RechercheSectionByName(FILE * fichierElf, char * nomSection, Elf32_Sh
 /*
 Affiche le contenu d'une section dont la position et la taille est passé en paramètre.
 */
-void afficheSection(char * contenuSection,Elf32_Word  taille,FILE * fichierElf);
+void afficheSection(unsigned char * contenuSection,Elf32_Word  taille,FILE * fichierElf);
 /*
 Retourne un tableau de headers des sections qui sont de type Rel ou Rela, la taille du tableau retourner est passé par référence.
 */

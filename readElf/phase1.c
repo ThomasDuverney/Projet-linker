@@ -254,13 +254,13 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	if(isdigit(*section) == 0){
 
 		tempHed = RechercheSectionByName(fichierElf,section,tabHeaders,structElf32,TableNomSection);
-		char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
+		unsigned char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
 		afficheSection(contenuSection,tempHed.sh_size,fichierElf);
 		free(contenuSection);
 
 	}else{
 		tempHed = tabHeaders[atoi(section)];
-		char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
+		unsigned char * contenuSection = RemplirContenuSection(tempHed,fichierElf);
 		afficheSection(contenuSection,tempHed.sh_size,fichierElf);
 		free(contenuSection);
 	}
@@ -268,8 +268,6 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32){
 	printf("\n");
 	free(tabHeaders);
 	free(TableNomSection);
-
-	printf("\n\n");
 }
 
 void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32){
