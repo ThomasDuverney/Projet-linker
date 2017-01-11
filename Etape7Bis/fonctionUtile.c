@@ -351,7 +351,7 @@ Elf32_Rela * AccesTabSymboleRela(Elf32_Off position,Elf32_Word  taille,FILE * fi
 
 }
 
-char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection){
+unsigned char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection){
 
 	Elf32_Shdr HdrTableString;
 	HdrTableString = RechercheSectionByName(fichierElf,".strtab",tabHeaders,structElf32,TableNomSection);
@@ -360,7 +360,7 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 	Elf32_Word  taille = HdrTableString.sh_size;
 	*size=taille;
 
-	char * tabString = malloc(taille);
+	unsigned char * tabString = malloc(taille);
 
 	if( tabString == NULL ){
     printf("Erreur d'allocation AccesTableString");
@@ -368,7 +368,7 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 	}
 
 	fseek(fichierElf,position, SEEK_SET);
-  	fread(tabString,1,taille,fichierElf);
+  fread(tabString,1,taille,fichierElf);
 
   	return tabString;
 
@@ -428,7 +428,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 				if(contenuFus->contenuElfFinal->sizeSections == 0){
 					contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
 					if( contenuFus->contenuElfFinal->tabSections  != NULL){
-					
+
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
         				        contenuFus->contenuElfFinal->sizeSections++;
@@ -440,7 +440,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 					tabTemp=realloc(contenuFus->contenuElfFinal->tabSections,sizeof(SectionInfos)*(contenuFus->contenuElfFinal->sizeSections+1));
 
 					if ( tabTemp != NULL){
-					
+
 						contenuFus->contenuElfFinal->tabSections=tabTemp;
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
@@ -454,19 +454,19 @@ void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * 
 	//int i;
 	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection));
 	strcpy(newSectionInfos->nomSection,sectionInfos->nomSection);
-	
+
 /*	printf("\n pour le nom %s \n",sectionInfos->nomSection);
 	for(i=0;i<strlen(sectionInfos->nomSection);i++){
-		printf("%x",sectionInfos->nomSection[i]);	
+		printf("%x",sectionInfos->nomSection[i]);
 	}
-	
+
 	printf("pour le deuxième nom %s \n",newSectionInfos->nomSection);
 	for(i=0;i<strlen(sectionInfos->nomSection);i++){
-		printf("%x",newSectionInfos->nomSection[i]);	
+		printf("%x",newSectionInfos->nomSection[i]);
 	}*/
-	
-	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;	
-	
+
+	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;
+
 	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
 	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
 
@@ -510,7 +510,7 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 				 	 }
 			  }
-			  
+
 			  flag = 1;
 			  tabWrited[sizeWrited]=i;
 			  sizeWrited++;
