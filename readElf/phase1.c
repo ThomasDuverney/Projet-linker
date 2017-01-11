@@ -383,3 +383,17 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHea
 
 		printf("\n\n");
 }
+
+
+void fonctionEtape6(ContenuFus * contenuFus){
+		// Affichage des sections
+	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElf1);
+
+	printf("\x1b[34mAffichage des sections du fichier 2 \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElf2);
+
+	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElfFinal);
+
+}

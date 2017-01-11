@@ -98,7 +98,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
 
 void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHeaders);
 
-void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos);
+void CopieSectionInfos(ContenuFus * contenuFus, const SectionInfos * sectionInfos);
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus);
 

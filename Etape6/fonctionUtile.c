@@ -422,15 +422,14 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
 
 }
 
-void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
+void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos){
 
 				if(contenuFus->contenuElfFinal->sizeSections == 0){
 					contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
 					if( contenuFus->contenuElfFinal->tabSections  != NULL){
-						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
-            contenuFus->contenuElfFinal->sizeSections++;
+						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),sectionInfos,sizeof(SectionInfos));
+        				        contenuFus->contenuElfFinal->sizeSections++;
 
-            void afficheSection(unsigned char * contenuSection,Elf32_Word  taille,FILE * fichierElf);
 					}
 
 				}else{
@@ -439,7 +438,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 
 					if ( tabTemp != NULL){
 						contenuFus->contenuElfFinal->tabSections=tabTemp;
-						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
+						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),sectionInfos,sizeof(SectionInfos));
 						contenuFus->contenuElfFinal->sizeSections++;
 					}
 				}
@@ -461,9 +460,13 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 			//printf("%s\n",tabSection[i].nomSection);
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
-				CopieSectionInfos(contenuFus,tabSection1[k]);
+				printf(" apres avant copie n %i\n",i);
+				afficherVerifFusion(contenuFus->contenuElf1);
+				CopieSectionInfos(contenuFus,&(tabSection1[k]));
+				printf(" apres copie n %i\n",i);
+				afficherVerifFusion(contenuFus->contenuElf1);
 			 	newSectionSize = tabSection1[k].tabHdrSections.sh_size + tabSection2[i].tabHdrSections.sh_size;
-			  unsigned char * tabTemp = realloc(contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].contenuSection,newSectionSize);
+			  	unsigned char * tabTemp = realloc(contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].contenuSection,newSectionSize);
 
 				if(tabTemp!=NULL){
 
@@ -481,7 +484,7 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 			}
 		}
 		if(flag == 0){
-					CopieSectionInfos(contenuFus,tabSection1[k]);
+					CopieSectionInfos(contenuFus,&(tabSection1[k]));
 		}
 
 	}
@@ -491,7 +494,7 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 			i++;
 		}
 		if(sizeWrited == i){
-			CopieSectionInfos(contenuFus,tabSection2[k]);
+			CopieSectionInfos(contenuFus,&(tabSection2[k]));
 		}
 	}
 	free(tabWrited);

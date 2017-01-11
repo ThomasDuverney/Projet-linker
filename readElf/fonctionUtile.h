@@ -102,4 +102,6 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos);
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus);
 
-void afficherVerifFusion(ContenuElf* contenuElf);
+void afficherLesContenusSections(ContenuElf* contenuElf);
+
+

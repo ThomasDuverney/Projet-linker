@@ -32,7 +32,7 @@ int main(int argc,char* argv[]){
 
 	remplirStructure(fichDest,contenuFus->contenuElf1,&TabHeaders1);
 	//fonctionEtape2(contenuFus->contenuElf1->hdrElf,fichDest,contenuFus->contenuElf1->TableNomSection,TabHeaders1);
-
+		//afficherVerifFusion(contenuFus->contenuElf1);
 	remplirStructure(secondFich,contenuFus->contenuElf2,&TabHeaders2);
 //	fonctionEtape2(contenuFus->contenuElf2->hdrElf,secondFich,contenuFus->contenuElf2->TableNomSection,TabHeaders2);
 
@@ -44,7 +44,7 @@ int main(int argc,char* argv[]){
 	tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,&size2,contenuFus->contenuElf2);
 
 	fusionSection(tabSectionProgb1,tabSectionProgb2,size1,size2,contenuFus);
-
+/*
 	// Affichage des sections
 	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
 	afficherVerifFusion(contenuFus->contenuElf1);
@@ -54,7 +54,7 @@ int main(int argc,char* argv[]){
 
 	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
 	afficherVerifFusion(contenuFus->contenuElfFinal);
-
+*/
 	fclose(fichDest);
 	fclose(secondFich);
 	return 0;
