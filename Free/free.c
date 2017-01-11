@@ -13,6 +13,8 @@ int main (int argc, char *argv[]){
 	Elf32_Shdr * TabHeaders = NULL;
 	ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
 	contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));
+	contenuFus->contenuElf2 = NULL;
+	contenuFus->contenuElfFinal = NULL;
 	
 	fichierElf = ouvrirFichier(argv[1]);
 	remplirStructure(fichierElf,contenuFus->contenuElf1,&TabHeaders);
@@ -36,7 +38,6 @@ void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders){
 	if(contenuFus->contenuElf2 != NULL){
 		
 		libererContenuElf(contenuFus->contenuElf2);
-		
 		
 	}
 	
