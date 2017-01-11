@@ -9,7 +9,7 @@ int main(int argc,char* argv[]){
 
 	FILE* fichDest = NULL;
 	FILE* secondFich = NULL;
-	int size1,size2;
+	//int size1,size2;
 
 	if(argc!=3){
 
@@ -27,11 +27,15 @@ int main(int argc,char* argv[]){
 	contenuFus->contenuElf2 = malloc(sizeof(ContenuElf));
 	contenuFus->contenuElfFinal = malloc(sizeof(ContenuElf));
 
-	Elf32_Shdr * TabHeaders1 = NULL;
+	/*Elf32_Shdr * TabHeaders1 = NULL;
 	Elf32_Shdr * TabHeaders2 = NULL;
 
 	remplirStructure(fichDest,contenuFus->contenuElf1,&TabHeaders1);
+	//fonctionEtape2(contenuFus->contenuElf1->hdrElf,fichDest,contenuFus->contenuElf1->TableNomSection,TabHeaders1);
+		//afficherVerifFusion(contenuFus->contenuElf1);
 	remplirStructure(secondFich,contenuFus->contenuElf2,&TabHeaders2);
+//	fonctionEtape2(contenuFus->contenuElf2->hdrElf,secondFich,contenuFus->contenuElf2->TableNomSection,TabHeaders2);
+
 
 	SectionInfos * tabSectionProgb1;
 	SectionInfos * tabSectionProgb2;
@@ -49,7 +53,7 @@ int main(int argc,char* argv[]){
 	afficherVerifFusion(contenuFus->contenuElf2);
 
 	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
-	afficherVerifFusion(contenuFus->contenuElfFinal);
+	afficherVerifFusion(contenuFus->contenuElfFinal);*/
 
 	fclose(fichDest);
 	fclose(secondFich);
