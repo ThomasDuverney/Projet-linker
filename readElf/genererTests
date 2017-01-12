@@ -1,0 +1,52 @@
+#!/bin/bash
+
+case $1 in
+	#Etape 1
+	1)echo -e "Etape 1\n"
+	./myReadElf -h file$2.o
+	readelf -h file1.o;;
+
+	2)
+	#Etape 2
+	echo -e "Etape 2\n"
+	./myReadElf -S file$2.o
+	readelf -S file$2.o;;
+
+	3)
+	#Etape 3
+	echo -e "Etape 3\n"
+	echo -e "Recherche par numéro\n"
+	./myReadElf -x 1 file$2.o 
+	echo -e "Recherche par nom\n"
+	./myReadElf -x .text file$2.o
+	echo -e "Comparaison avec le readelf \n"
+	readelf -x 1 file$2.o 
+	echo -e "Affichage d'une section vide \n"
+	./myReadElf -x .bss file$2.o
+	readelf -x 4 file$2.o
+	echo -e "Affichage d'un hexdump pour comparer\n"
+	hexdump -C file$2.o;;
+
+	4)
+	#Etape 4
+	echo -e "Etape 4\n"
+	./myReadElf -s file$2.o 
+	readelf -s file$2.o;;
+
+	5)
+	#Etape 5
+	echo -e "Etape 5\n"
+	./myReadElf -r file$2.o 
+	readelf -r file$2.o;;
+
+	phase1)
+	echo -e "Récapitulatif phase 1 \n"
+	echo -e "Affichage de toutes les infos de plusieurs fichiers \n"
+	./myReadElf -a file1.o file2.o;;
+
+	#Etape 6
+	6)
+	echo -e "Etape \n"
+	./myReadElf -f file1.o file2.o;;
+
+esac
