@@ -542,3 +542,69 @@ void afficherVerifFusion(ContenuElf* contenuElf){
 		}
 		printf("\n");
 }
+
+void libererSectionInfos(SectionInfos * sectionInfos){
+	
+	//free(sectionInfos->nomSection);
+	//free(sectionInfos->contenuSection);
+	free(sectionInfos);
+	printf("Mémoire libérée (sectionInfos)\n");
+	}
+	
+void libererTabHeaders(Elf32_Shdr * TabHeaders){
+	
+	free(TabHeaders);
+	printf("Mémoire libérée (TabHeaders)\n");
+	
+}
+
+void libererContenuElf(ContenuElf * contenuElf){
+	
+	int i;
+	
+	free(contenuElf->tableString);
+	free(contenuElf->TableNomSection);
+	free(contenuElf->tabSymb);
+	free(contenuElf->tabRela);
+	
+
+	for (i=0;i<contenuElf->hdrElf.e_shnum;i++){
+		free((contenuElf->tabSections)[i].contenuSection);
+	}
+
+	free(contenuElf->tabSections);
+
+	if(contenuElf->fichierElf != NULL){
+		fclose(contenuElf->fichierElf);
+	}	
+	
+	free(contenuElf);
+	
+	
+}
+
+
+void libererMemoire(ContenuFus * contenuFus){
+
+	if(contenuFus->contenuElf1 != NULL){
+		
+		libererContenuElf(contenuFus->contenuElf1);
+		
+	}
+	
+	if(contenuFus->contenuElf2 != NULL){
+		
+		libererContenuElf(contenuFus->contenuElf2);
+		
+	}
+	
+	if(contenuFus->contenuElfFinal != NULL){
+	
+		libererContenuElf(contenuFus->contenuElfFinal);
+	
+	}
+	free(contenuFus);
+	
+	printf("Mémoire libérée (ContenuFus)\n");
+	
+}

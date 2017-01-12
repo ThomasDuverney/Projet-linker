@@ -1,0 +1,84 @@
+
+void libererMemoire(ContenuFus * contenuFus){
+
+	if(contenuFus->contenuElf1 != NULL){
+		
+		libererContenuElf(contenuFus->contenuElf1);
+		
+	}
+	
+	if(contenuFus->contenuElf2 != NULL){
+		
+		libererContenuElf(contenuFus->contenuElf2);
+		
+	}
+	
+	if(contenuFus->contenuElfFinal != NULL){
+	
+		libererContenuElf(contenuFus->contenuElfFinal);
+	
+	}
+	free(contenuFus);
+	
+	printf("Mémoire libérée (ContenuFus)\n");
+	
+}
+
+void libererContenuElf(ContenuElf * contenuElf){
+	
+	int i;
+	
+	free(contenuElf->tableString);
+	free(contenuElf->TableNomSection);
+	free(contenuElf->tabSymb);
+	free(contenuElf->tabRela);
+	
+
+	for (i=0;i<contenuElf->hdrElf.e_shnum;i++){
+		free((contenuElf->tabSections)[i].contenuSection);
+	}
+
+	free(contenuElf->tabSections);
+
+	if(contenuElf->fichierElf != NULL){
+		fclose(contenuElf->fichierElf);
+	}	
+	
+	free(contenuElf);
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+Libère la mémoire pour un TabHeaders
+*/
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
+/*
+Libère toute la mémoire lié aux paramètres
+*/
+void libererMemoire(ContenuFus * contenuFus);
+/*
+Libère la mémoire d'un contenuElf (sous-fonction utilisée dans libererMemoire)
+*/
+void libererContenuElf(ContenuElf * contenuElf);
+/*
+Libère la mémoire de sectionInfos
+*/
+void libererSectionInfos(SectionInfos * sectionInfos);
+
+
+
+

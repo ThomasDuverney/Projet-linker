@@ -98,16 +98,26 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
 
 void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHeaders);
 
-void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos);
+void CopieSectionInfos(ContenuFus * contenuFus, const SectionInfos * sectionInfos);
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus);
 
 void afficherVerifFusion(ContenuElf* contenuElf);
+
+void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos);
 /*
-Libère toute la mémoire lié aux paramètres
+Libère la mémoire de sectionInfos
 */
-void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders);
+void libererSectionInfos(SectionInfos * sectionInfos);
+/*
+Libère la mémoire pour un TabHeaders
+*/
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
 /*
 Libère la mémoire d'un contenuElf (sous-fonction utilisée dans libererMemoire)
 */
 void libererContenuElf(ContenuElf * contenuElf);
+/*
+Libère toute la mémoire lié aux paramètres
+*/
+void libererMemoire(ContenuFus * contenuFus);

@@ -130,7 +130,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
   *size=0;
 
   while(j<contenuElf->hdrElf.e_shnum){
-    
+
     if(typeSection == contenuElf->tabSections[j].tabHdrSections.sh_type){
         if(*size == 0){
 
@@ -189,12 +189,12 @@ Elf32_Sym * AccesTableSymbole(FILE * fichierElf,Elf32_Ehdr structElf32,int * sym
 
 	Elf32_Shdr structSymTable;
 	structSymTable = RechercheSectionByName(fichierElf,".symtab",tabHeaders,structElf32, TableNomSection);
-	
+
 	*symTableSize = structSymTable.sh_size/structSymTable.sh_entsize;
 	Elf32_Sym symbole;
 	Elf32_Sym * tabSymb = malloc(structSymTable.sh_size);
 	if(tabSymb != NULL){
-	
+
 		fseek(fichierElf,structSymTable.sh_offset,0);
 
 		for(int i=0; i<*symTableSize; i++){
@@ -202,7 +202,7 @@ Elf32_Sym * AccesTableSymbole(FILE * fichierElf,Elf32_Ehdr structElf32,int * sym
 			tabSymb[i] = symbole;
 		}
 	}
-	return tabSymb;	
+	return tabSymb;
 }
 
 unsigned char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
@@ -391,10 +391,10 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
   contenuElf->hdrElf = lireHeaderElf(fichier);
 
   *TabHeaders = accesTableDesHeaders(contenuElf->hdrElf, fichier);
-  
+
   // CHARGER TABLE NOM SECTION DANS LA STRUCTURE
   contenuElf->TableNomSection = AccesTableNomSection(contenuElf->hdrElf, fichier);
-  
+
 
   contenuElf->tableString = AccesTableString(*TabHeaders, contenuElf->hdrElf ,&(contenuElf->sizeTabString),fichier,contenuElf->TableNomSection);
 
@@ -403,14 +403,14 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
 
 
   contenuElf->tabRela = rechercherTablesReimplentation(*TabHeaders, contenuElf->hdrElf ,&(contenuElf->tabRelaSize),fichier);
-  
+
   contenuElf->tabSections = malloc(contenuElf->hdrElf.e_shnum*sizeof(SectionInfos));
   if( contenuElf->tabSections == NULL){
   	printf("Erreur Allocation");
   	exit(1);
   }
   contenuElf->sizeSections = contenuElf->hdrElf.e_shnum;
-  
+
   for(i=0;i<contenuElf->sizeSections;i++){
       SectionInfos sectionInfos;
       sectionInfos.tabHdrSections = (*TabHeaders)[i];
@@ -418,21 +418,21 @@ void remplirStructure(FILE * fichier,ContenuElf * contenuElf,Elf32_Shdr ** TabHe
       sectionInfos.contenuSection= RemplirContenuSection(sectionInfos.tabHdrSections,fichier);
       contenuElf->tabSections[i] = sectionInfos;
   }
-  
- 
+
+
 }
 
+void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos){
 
-
-
-void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
-
-
+				SectionInfos newSectionInfos;
 				if(contenuFus->contenuElfFinal->sizeSections == 0){
 					contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
 					if( contenuFus->contenuElfFinal->tabSections  != NULL){
-						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
-						contenuFus->contenuElfFinal->sizeSections++;
+					
+						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
+						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
+        				        contenuFus->contenuElfFinal->sizeSections++;
+
 					}
 
 				}else{
@@ -440,13 +440,37 @@ void CopieSectionInfos(ContenuFus * contenuFus,SectionInfos sectionInfos){
 					tabTemp=realloc(contenuFus->contenuElfFinal->tabSections,sizeof(SectionInfos)*(contenuFus->contenuElfFinal->sizeSections+1));
 
 					if ( tabTemp != NULL){
-
+					
 						contenuFus->contenuElfFinal->tabSections=tabTemp;
-						memcpy(&(contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections]),&sectionInfos,sizeof(SectionInfos));
+						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
+						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
 						contenuFus->contenuElfFinal->sizeSections++;
-
 					}
 				}
+}
+
+void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos){
+
+	//int i;
+	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection));
+	strcpy(newSectionInfos->nomSection,sectionInfos->nomSection);
+	
+/*	printf("\n pour le nom %s \n",sectionInfos->nomSection);
+	for(i=0;i<strlen(sectionInfos->nomSection);i++){
+		printf("%x",sectionInfos->nomSection[i]);	
+	}
+	
+	printf("pour le deuxième nom %s \n",newSectionInfos->nomSection);
+	for(i=0;i<strlen(sectionInfos->nomSection);i++){
+		printf("%x",newSectionInfos->nomSection[i]);	
+	}*/
+	
+	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;	
+	
+	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
+	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
+
+
 }
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus){
@@ -464,38 +488,49 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 			//printf("%s\n",tabSection[i].nomSection);
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
+				printf("%s \n",tabSection1[k].nomSection);
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
-				CopieSectionInfos(contenuFus,tabSection1[k]);
+				//printf(" apres avant copie n %i\n",i);
+				//afficherVerifFusion(contenuFus->contenuElf1);
+				CopieSectionInfos(contenuFus,&(tabSection1[k]));
+				//printf(" apres copie n %i\n",i);
+				//afficherVerifFusion(contenuFus->contenuElf1);
 			 	newSectionSize = tabSection1[k].tabHdrSections.sh_size + tabSection2[i].tabHdrSections.sh_size;
-			    unsigned char * tabTemp = realloc(tabSection1[k].contenuSection,newSectionSize);
-			  
-				if(tabTemp!=NULL){
+			 	if(newSectionSize !=0){
+			  		unsigned char * tabTemp = realloc(contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].contenuSection,newSectionSize);
 
-					int j;
-					for(j=0;j<tabSection2[i].tabHdrSections.sh_size;j++){
-							tabTemp[tabSection1[k].tabHdrSections.sh_size+j]=tabSection2[i].contenuSection[j];
-					}
-					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].contenuSection = tabTemp;
-					contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections-1].tabHdrSections.sh_size = newSectionSize;			
-					flag = 1;
-					tabWrited[sizeWrited]=i;
-					sizeWrited++;
+					if(tabTemp!=NULL){
 
+						int j;
+						for(j=0;j<tabSection2[i].tabHdrSections.sh_size;j++){
+								tabTemp[tabSection1[k].tabHdrSections.sh_size+j]=tabSection2[i].contenuSection[j];
+						}
+						contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].contenuSection = tabTemp;
+						contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].tabHdrSections.sh_size = newSectionSize;
+
+				 	 }
 			  }
+			  
+			  flag = 1;
+			  tabWrited[sizeWrited]=i;
+			  sizeWrited++;
 			}
 		}
 		if(flag == 0){
-					CopieSectionInfos(contenuFus,tabSection1[k]);
+					printf("%s \n",tabSection1[k].nomSection);
+					CopieSectionInfos(contenuFus,&(tabSection1[k]));
 		}
 
 	}
 	for(k=0;k<size2;k++){
 		i=0;
 		while(i<sizeWrited && tabWrited[i] != k){
+			printf("%i\n",tabWrited[i]);
 			i++;
 		}
 		if(sizeWrited == i){
-			CopieSectionInfos(contenuFus,tabSection2[k]);
+			printf("Recherhche fichier 2 %s \n",tabSection2[k].nomSection);
+			CopieSectionInfos(contenuFus,&(tabSection2[k]));
 		}
 	}
 	free(tabWrited);
@@ -504,13 +539,54 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 void afficherVerifFusion(ContenuElf* contenuElf){
 		for(int i=0; i<contenuElf->sizeSections; i++){
 			printf("Section %s :\n", contenuElf->tabSections[i].nomSection);
-			afficheSection(contenuElf->tabSections[i].contenuSection, contenuElf->tabSections[i].tabHdrSections.sh_size, contenuElf->fichierElf);	
-			printf("\n\n");	
-		}	
-		printf("\n");	
+			afficheSection(contenuElf->tabSections[i].contenuSection, contenuElf->tabSections[i].tabHdrSections.sh_size, contenuElf->fichierElf);
+			printf("\n\n");
+		}
+		printf("\n");
 }
 
-void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders){
+void libererSectionInfos(SectionInfos * sectionInfos){
+	
+	//free(sectionInfos->nomSection);
+	//free(sectionInfos->contenuSection);
+	free(sectionInfos);
+	printf("Mémoire libérée (sectionInfos)\n");
+	}
+	
+void libererTabHeaders(Elf32_Shdr * TabHeaders){
+	
+	free(TabHeaders);
+	printf("Mémoire libérée (TabHeaders)\n");
+	
+}
+
+void libererContenuElf(ContenuElf * contenuElf){
+	
+	int i;
+	
+	free(contenuElf->tableString);
+	free(contenuElf->TableNomSection);
+	free(contenuElf->tabSymb);
+	free(contenuElf->tabRela);
+	
+
+	for (i=0;i<contenuElf->hdrElf.e_shnum;i++){
+		free((contenuElf->tabSections)[i].contenuSection);
+	}
+
+	free(contenuElf->tabSections);
+
+	if(contenuElf->fichierElf != NULL){
+		fclose(contenuElf->fichierElf);
+	}	
+	
+	free(contenuElf);
+	
+	
+}
+
+
+void libererMemoire(ContenuFus * contenuFus){
 
 	if(contenuFus->contenuElf1 != NULL){
 		
@@ -525,27 +601,12 @@ void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders){
 	}
 	
 	if(contenuFus->contenuElfFinal != NULL){
-		
+	
 		libererContenuElf(contenuFus->contenuElfFinal);
 	
 	}
-	free(TabHeaders);
 	free(contenuFus);
-}
-
-void libererContenuElf(ContenuElf * contenuElf){
-
-	int i;
 	
-	free(contenuElf->tableString);
-	free(contenuElf->TableNomSection);
-	free(contenuElf->tabSymb);
-	free(contenuElf->tabRela);
-	
-	for (i=0;i<contenuElf->hdrElf.e_shnum;i++){
-		free((contenuElf->tabSections)[i].contenuSection);
-	}	
-	free(contenuElf->tabSections);		
-	free(contenuElf);
+	printf("Mémoire libérée (ContenuFus)\n");
 	
 }

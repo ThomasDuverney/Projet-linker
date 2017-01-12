@@ -105,3 +105,19 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 void afficherVerifFusion(ContenuElf* contenuElf);
 
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos);
+/*
+Libère la mémoire de sectionInfos
+*/
+void libererSectionInfos(SectionInfos * sectionInfos);
+/*
+Libère la mémoire pour un TabHeaders
+*/
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
+/*
+Libère la mémoire d'un contenuElf (sous-fonction utilisée dans libererMemoire)
+*/
+void libererContenuElf(ContenuElf * contenuElf);
+/*
+Libère toute la mémoire lié aux paramètres
+*/
+void libererMemoire(ContenuFus * contenuFus);
