@@ -469,6 +469,9 @@ void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * 
 	
 	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
 	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
+	
+	free(newSectionInfos->nomSection);
+	//-------->free(newSectionInfos->contenuSection);
 
 
 }
@@ -509,6 +512,8 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 						contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].tabHdrSections.sh_size = newSectionSize;
 
 				 	 }
+			//Libéré			
+			free(tabTemp);
 			  }
 			  
 			  flag = 1;
@@ -547,8 +552,8 @@ void afficherVerifFusion(ContenuElf* contenuElf){
 
 void libererSectionInfos(SectionInfos * sectionInfos){
 	
-	//free(sectionInfos->nomSection);
-	//free(sectionInfos->contenuSection);
+	
+	//------->free(sectionInfos->contenuSection);
 	free(sectionInfos);
 	printf("Mémoire libérée (sectionInfos)\n");
 	}
