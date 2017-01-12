@@ -94,7 +94,7 @@ int main (int argc, char *argv[]){
 
 		if(do_symbols){
 			
-			fonctionEtape4(fichierElf,contenuFus->contenuElf1->hdrElf,contenuFus->contenuElf1->TableNomSection,TabHeaders,contenuFus->contenuElf1->tabSymb,contenuFus->contenuElf1->symTableSize,contenuFus->contenuElf1->tableString);
+			fonctionEtape4(contenuFus->contenuElf1->tabSymb,contenuFus->contenuElf1->symTableSize,contenuFus->contenuElf1->tableString);
 		}	
 
 		if(do_relocs){

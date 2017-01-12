@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <elf.h>
 
+#ifndef __FONCTIONUTILE__
+#define __FONCTIONUTILE__
+
 typedef struct {
         char * nomSection;
         Elf32_Shdr  tabHdrSections;
@@ -107,4 +110,4 @@ void afficherVerifFusion(ContenuElf* contenuElf);
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos);
 
 void afficherLesContenusSections(ContenuElf* contenuElf);
-
+#endif

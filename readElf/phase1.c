@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "fonctionUtile.h"
-
+#include "phase1.h"
 
 
 void fonctionEtape1(Elf32_Ehdr structElf32){
@@ -258,7 +258,7 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char
 	printf("\n");
 }
 
-void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders,Elf32_Sym * tabSymb,int symTableSize,char * tabString){
+void fonctionEtape4(Elf32_Sym * tabSymb,int symTableSize,char * tabString){
 
 	Elf32_Sym symbole;
 	
