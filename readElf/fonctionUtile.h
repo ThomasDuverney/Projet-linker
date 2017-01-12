@@ -114,4 +114,20 @@ void afficherLesContenusSections(ContenuElf* contenuElf);
 	Remplit une structure de type ContenuFus à l'aide de deux fichiers
 */
 ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich);
+/*
+Libère la mémoire de sectionInfos
+*/
+void libererSectionInfos(SectionInfos * sectionInfos);
+/*
+Libère la mémoire pour un TabHeaders
+*/
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
+/*
+Libère la mémoire d'un contenuElf (sous-fonction utilisée dans libererMemoire)
+*/
+void libererContenuElf(ContenuElf * contenuElf);
+/*
+Libère toute la mémoire lié aux paramètres
+*/
+void libererMemoire(ContenuFus * contenuFus);
 #endif

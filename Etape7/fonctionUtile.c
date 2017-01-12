@@ -445,7 +445,8 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
 						contenuFus->contenuElfFinal->sizeSections++;
-					}
+						
+					}					
 				}
 }
 
@@ -470,7 +471,7 @@ void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * 
 	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
 	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
 	
-	free(newSectionInfos->nomSection);
+	//free(newSectionInfos->nomSection);
 	//-------->free(newSectionInfos->contenuSection);
 
 
@@ -491,7 +492,6 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 			//printf("%s\n",tabSection[i].nomSection);
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
-				printf("%s \n",tabSection1[k].nomSection);
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
 				//printf(" apres avant copie n %i\n",i);
 				//afficherVerifFusion(contenuFus->contenuElf1);
@@ -522,7 +522,6 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 			}
 		}
 		if(flag == 0){
-					printf("%s \n",tabSection1[k].nomSection);
 					CopieSectionInfos(contenuFus,&(tabSection1[k]));
 		}
 
@@ -530,11 +529,9 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 	for(k=0;k<size2;k++){
 		i=0;
 		while(i<sizeWrited && tabWrited[i] != k){
-			printf("%i\n",tabWrited[i]);
 			i++;
 		}
 		if(sizeWrited == i){
-			printf("Recherhche fichier 2 %s \n",tabSection2[k].nomSection);
 			CopieSectionInfos(contenuFus,&(tabSection2[k]));
 		}
 	}
@@ -554,6 +551,7 @@ void libererSectionInfos(SectionInfos * sectionInfos){
 	
 	
 	//------->free(sectionInfos->contenuSection);
+	//if(sectionInfos->nomSection == NULL) free(sectionInfos->nomSection);
 	free(sectionInfos);
 	printf("Mémoire libérée (sectionInfos)\n");
 	}
@@ -587,7 +585,6 @@ void libererContenuElf(ContenuElf * contenuElf){
 	
 	free(contenuElf);
 	
-	
 }
 
 
@@ -606,9 +603,11 @@ void libererMemoire(ContenuFus * contenuFus){
 	}
 	
 	if(contenuFus->contenuElfFinal != NULL){
-	
+			
 		libererContenuElf(contenuFus->contenuElfFinal);
-	
+		free(contenuFus->contenuElfFinal->tabSections->nomSection);
+		
+			
 	}
 	free(contenuFus);
 	

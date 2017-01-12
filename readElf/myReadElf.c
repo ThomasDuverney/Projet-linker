@@ -129,5 +129,11 @@ int main (int argc, char *argv[]){
 		afficherParametres();
 	}
 
+	/*libererSectionInfos(tabSectionProgb1);
+	libererSectionInfos(tabSectionProgb2);
+	libererTabHeaders(TabHeaders);
+	libererTabHeaders(TabHeaders2);
+	libererMemoire(contenuFus);*/
+
 	return 0;
 }
