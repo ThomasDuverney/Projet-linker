@@ -20,11 +20,11 @@ void afficherParametres(){
 int main (int argc, char *argv[]){
 
 	FILE* fichierElf;
-  
+
 	int opt;
-	static int do_header, do_sections, 
-				do_hex_dump, do_symbols, 
-				do_relocs, do_fusion_sections; // flags pour les options
+	static int do_header, do_sections,
+				do_hex_dump, do_symbols,
+				do_relocs, do_fusion_sections, do_fusion_tab_symb; // flags pour les options
 
 	// Tableau des options
 	struct option longopts[] = {
@@ -41,7 +41,7 @@ int main (int argc, char *argv[]){
 	// Parcours des incipales fonctions et chiers correspondants options
 	if(argc >= 3){
 		char * sectionHexDump;
-		while ((opt = getopt_long(argc, argv, "ahSsrfx:", longopts, NULL)) != -1) {	
+		while ((opt = getopt_long(argc, argv, "ahSsrfx:", longopts, NULL)) != -1) {
 			switch(opt) {
 				case 'a':
 					do_header++;
@@ -68,6 +68,9 @@ int main (int argc, char *argv[]){
 				case 'f':
 					do_fusion_sections++;
 					break;
+				case 't':
+					do_fusion_tab_symb++;
+					break;
 				default:
 					fprintf(stderr, "Option inconnue %c\n", opt);
 					afficherParametres();
@@ -85,29 +88,29 @@ int main (int argc, char *argv[]){
 					printf("Impossible d'ouvrir le fichier %s\n", argv[i]);
 					exit(1);
 				}
-			
+
 				printf("\x1b[34mAffichage du fichier %s\n\x1b[0m\n", argv[i]);
-			
-				ContenuElf * contenuElf = malloc(sizeof(ContenuElf));	
+
+				ContenuElf * contenuElf = malloc(sizeof(ContenuElf));
 				Elf32_Shdr * TabHeaders = NULL;
 				remplirStructure(fichierElf,contenuElf,&TabHeaders);
-		
+
 				// Appel des fonctions nécessaires
 				if(do_header){
 					fonctionEtape1(contenuElf->hdrElf);
 				}
-	
+
 				if(do_sections){
 					fonctionEtape2(contenuElf->hdrElf,fichierElf,contenuElf->TableNomSection,TabHeaders);
-				}	
+				}
 
 				if(do_hex_dump){
 					fonctionEtape3(fichierElf,sectionHexDump,contenuElf->hdrElf,contenuElf->TableNomSection,TabHeaders);
-				}	
+				}
 
 				if(do_symbols){
 					fonctionEtape4(contenuElf->tabSymb,contenuElf->symTableSize,contenuElf->tableString);
-				}	
+				}
 
 				if(do_relocs){
 					fonctionEtape5(contenuElf->hdrElf,fichierElf,TabHeaders,contenuElf->tabRela,contenuElf->tabRelaSize);
@@ -134,9 +137,18 @@ int main (int argc, char *argv[]){
 
 			remplirStructure(fichDest,contenuFus->contenuElf1,&TabHeaders1);
 			remplirStructure(secondFich,contenuFus->contenuElf2,&TabHeaders2);
-				
-			fonctionEtape6(contenuFus);
-			
+
+			int size1;
+			int size2;
+
+			SectionInfos * tabSecType1 = NULL;
+			SectionInfos * tabSecType2 = NULL;
+
+			//fonctionEtape6(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
+			fonctionEtape7(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
+
+			libererSectionInfos(tabSecType1,size1);
+			libererSectionInfos(tabSecType2,size2);
 			libererTabHeaders(TabHeaders1);
 			libererTabHeaders(TabHeaders2);
 			libererMemoire(contenuFus);

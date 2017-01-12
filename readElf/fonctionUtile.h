@@ -22,12 +22,12 @@ typedef struct {
 
         char * tableString;
         int sizeTabString;
-        
+
         int symTableSize;
-  	Elf32_Sym * tabSymb;
-  	
+  	    Elf32_Sym * tabSymb;
+
   	char * TableNomSection ;
-         
+
         int tabRelaSize;
         Elf32_Shdr * tabRela;
 
@@ -37,7 +37,7 @@ typedef struct {
         ContenuElf * contenuElf1;
         ContenuElf * contenuElf2;
         ContenuElf * contenuElfFinal;
-        
+
 } ContenuFus;
 
 /*
@@ -130,4 +130,13 @@ void libererContenuElf(ContenuElf * contenuElf);
 Libère toute la mémoire lié aux paramètres
 */
 void libererMemoire(ContenuFus * contenuFus);
+
+int fusionTabSymLocaux(ContenuElf * contenuElf,ContenuElf * contenuFusion);
+
+void updateIndexSymb(int lastLocauxAdd,ContenuFus * contenuFus);
+
+void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenuFus);
+
+void ajoutTabSymb(ContenuElf * contenuFusion,Elf32_Sym symbAdd);
+
 #endif

@@ -237,7 +237,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf,char* TableNomSect
 }
 
 void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders){
-	
+
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
 
@@ -261,7 +261,7 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char
 void fonctionEtape4(Elf32_Sym * tabSymb,int symTableSize,char * tabString){
 
 	Elf32_Sym symbole;
-	
+
 	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
 
 	for(int i=0; i<symTableSize; i++){
@@ -368,7 +368,7 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHea
 			else{
 				tabSymRela=AccesTabSymboleRela(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
 
-		
+
 				for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
 					afficherRelocation(tabSymRela[j].r_info,tabSymRela[j].r_offset);
 				}
@@ -385,17 +385,12 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHea
 }
 
 
-void fonctionEtape6(ContenuFus * contenuFus){
-	
-	int size1,size2;
+void fonctionEtape6(ContenuFus * contenuFus,SectionInfos ** tabSectionProgb1,SectionInfos ** tabSectionProgb2,int * size1,int * size2){
 
-	SectionInfos * tabSectionProgb1;
-	SectionInfos * tabSectionProgb2;
+	*tabSectionProgb1 = RechercheSectionByType(SHT_PROGBITS,size1,contenuFus->contenuElf1);
+	*tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,size2,contenuFus->contenuElf2);
 
-	tabSectionProgb1 = RechercheSectionByType(SHT_PROGBITS,&size1,contenuFus->contenuElf1);
-	tabSectionProgb2 = RechercheSectionByType(SHT_PROGBITS,&size2,contenuFus->contenuElf2);
-
-	fusionSection(tabSectionProgb1,tabSectionProgb2,size1,size2,contenuFus);
+	fusionSection(*tabSectionProgb1,*tabSectionProgb2,*size1,*size2,contenuFus);
 
 	// Affichage des sections
 	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
@@ -406,8 +401,38 @@ void fonctionEtape6(ContenuFus * contenuFus){
 
 	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
 	afficherVerifFusion(contenuFus->contenuElfFinal);
-	
-	libererSectionInfos(tabSectionProgb1,size1);
-	libererSectionInfos(tabSectionProgb2,size2);
+}
 
+void fonctionEtape7(ContenuFus * contenuFus,SectionInfos ** tabSectionStr1,SectionInfos ** tabSectionStr2,int * size1,int * size2){
+
+  *tabSectionStr1 = RechercheSectionByType(SHT_STRTAB,size1,contenuFus->contenuElf1);
+  *tabSectionStr2 = RechercheSectionByType(SHT_STRTAB,size2,contenuFus->contenuElf2);
+
+  fusionSection(*tabSectionStr1,*tabSectionStr2,*size1,*size2,contenuFus);
+
+  int i;
+  int sizetabsec = contenuFus->contenuElfFinal->sizeSections;
+  while(i<sizetabsec && strcmp(contenuFus->contenuElfFinal->tabSections[i].nomSection,".strtab")){
+    i++;
+  }
+  if(i!=sizetabsec){
+    contenuFus->contenuElfFinal->tableString = (char *) contenuFus->contenuElfFinal->tabSections[i].contenuSection;
+  }
+
+  contenuFus->contenuElfFinal->tabSymb = malloc(sizeof(Elf32_Sym));
+  contenuFus->contenuElfFinal->symTableSize = 0;
+
+  int firstGlobal_1 = fusionTabSymLocaux(contenuFus->contenuElf1,contenuFus->contenuElfFinal);
+  int firstGlobal_2 = fusionTabSymLocaux(contenuFus->contenuElf2,contenuFus->contenuElfFinal);
+  updateIndexSymb(firstGlobal_1,contenuFus);
+  fusionTabSymGlobal(firstGlobal_1,firstGlobal_2,contenuFus);
+
+  printf("\x1b[34m Affichage de la table des symboles fichier 1 \x1b[0m\n");
+  fonctionEtape4(contenuFus->contenuElf1->tabSymb,contenuFus->contenuElf1->symTableSize,contenuFus->contenuElf1->tableString);
+
+  printf("\x1b[34m Affichage de la table des symboles fichier 2 \x1b[0m\n");;
+  fonctionEtape4(contenuFus->contenuElf2->tabSymb,contenuFus->contenuElf2->symTableSize,contenuFus->contenuElf2->tableString);
+
+  printf("\x1b[34m Affichage de la table des symboles fusionée \x1b[0m\n");
+  fonctionEtape4(contenuFus->contenuElfFinal->tabSymb,contenuFus->contenuElfFinal->symTableSize,contenuFus->contenuElfFinal->tableString);
 }

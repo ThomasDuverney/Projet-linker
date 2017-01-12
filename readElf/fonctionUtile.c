@@ -136,23 +136,18 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
         if(*size == 0){
 
             tabSectionType=malloc(sizeof(SectionInfos));
-            if( tabSectionType == NULL ){
-              return NULL;
-            }
-            else{
+            if( tabSectionType != NULL ){
 
-	      dupliquerSectionInfos(&newSectionInfos,&(contenuElf->tabSections[j]));
-              tabSectionType[*size] = newSectionInfos;
-              (*size)++;
-		
+	             dupliquerSectionInfos(&newSectionInfos,&(contenuElf->tabSections[j]));
+               tabSectionType[*size] = newSectionInfos;
+               (*size)++;
+
             }
         }else{
             SectionInfos * tabTemp;
             tabTemp=realloc(tabSectionType,sizeof(SectionInfos)*(*size+1));
 
-            if ( tabTemp == NULL){
-              return NULL;
-            }else{
+            if ( tabTemp != NULL){
               tabSectionType=tabTemp;
               dupliquerSectionInfos(&newSectionInfos,&(contenuElf->tabSections[j]));
               tabSectionType[*size] = newSectionInfos;
@@ -227,14 +222,8 @@ unsigned char * RemplirContenuSection(Elf32_Shdr hdrSection,FILE * fichierElf){
   }
 }
 void afficherRelocation(int r_info,int r_offset){
-	/*printf("offset\t");
-	printf("\tInfo\t");
-	printf("\tType\t");
-	printf("\tVal.-Sym\n");*/
-
 	printf("%08x\t",r_offset);
 	printf("%08x\t",r_info);
-
 
 	switch(ELF32_R_TYPE(r_info)){
 
@@ -298,10 +287,7 @@ Elf32_Shdr *  rechercherTablesReimplentation(Elf32_Shdr * tabHeaders,Elf32_Ehdr 
 					(*size)++;
 				}
 			}
-
-
 		}
-
 	}
 
 	return tabSectionReimp;
@@ -373,9 +359,9 @@ char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * siz
 	}
 
 	fseek(fichierElf,position, SEEK_SET);
-  	fread(tabString,1,taille,fichierElf);
+  fread(tabString,1,taille,fichierElf);
 
-  	return tabString;
+  return tabString;
 
 }
 
@@ -433,7 +419,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 				if(contenuFus->contenuElfFinal->sizeSections == 0){
 					contenuFus->contenuElfFinal->tabSections = malloc(sizeof(SectionInfos));
 					if( contenuFus->contenuElfFinal->tabSections  != NULL){
-					
+
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
         				        contenuFus->contenuElfFinal->sizeSections++;
@@ -445,7 +431,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 					tabTemp=realloc(contenuFus->contenuElfFinal->tabSections,sizeof(SectionInfos)*(contenuFus->contenuElfFinal->sizeSections+1));
 
 					if ( tabTemp != NULL){
-					
+
 						contenuFus->contenuElfFinal->tabSections=tabTemp;
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
@@ -458,19 +444,18 @@ void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * 
 
 	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection));
 	strcpy(newSectionInfos->nomSection,sectionInfos->nomSection);
-	
-	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;	
-	
+
+	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;
+
 	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
 	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
-
-
 
 }
 
 void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int size1, int size2,ContenuFus * contenuFus){
 
-	int i,k,flag;
+	int i,k;
+  int flag=0;
 	int sizeWrited = 0;
 	int newSectionSize = 0;
 	int * tabWrited = malloc(size2+size1);
@@ -481,7 +466,7 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 		for(i=0;i<size2;i++){
 
-	
+
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
 
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
@@ -502,7 +487,7 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 				 	 }
 			  }
-			  
+
 			  flag = 1;
 			  tabWrited[sizeWrited]=i;
 			  sizeWrited++;
@@ -566,32 +551,32 @@ ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich){
 }
 
 void libererSectionInfos(SectionInfos * sectionInfos,int sizeTabSection){
-	int i;	
+	int i;
 	for (i=0;i<sizeTabSection;i++){
-	   free((sectionInfos)[i].contenuSection);
+	   free(sectionInfos[i].contenuSection);
 	}
 
 
 	free(sectionInfos);
 	printf("Mémoire libérée (sectionInfos)\n");
 	}
-	
+
 void libererTabHeaders(Elf32_Shdr * TabHeaders){
-	
+
 	free(TabHeaders);
 	printf("Mémoire libérée (TabHeaders)\n");
-	
+
 }
 
 void libererContenuElf(ContenuElf * contenuElf){
-	
+
 	int i;
-	
+
 	free(contenuElf->tableString);
 	free(contenuElf->TableNomSection);
 	free(contenuElf->tabSymb);
 	free(contenuElf->tabRela);
-	
+
 
 	for (i=0;i<contenuElf->sizeSections;i++){
 		free((contenuElf->tabSections)[i].contenuSection);
@@ -601,40 +586,158 @@ void libererContenuElf(ContenuElf * contenuElf){
 
 	if(contenuElf->fichierElf != NULL){
 		fclose(contenuElf->fichierElf);
-	}	
-	
+	}
+
 	free(contenuElf);
-	
+
 }
 
 
 void libererMemoire(ContenuFus * contenuFus){
 
 	if(contenuFus->contenuElf1 != NULL){
-		
+
 		libererContenuElf(contenuFus->contenuElf1);
-		
+
 	}
-	
+
 	if(contenuFus->contenuElf2 != NULL){
-		
+
 		libererContenuElf(contenuFus->contenuElf2);
-		
+
 	}
-	
+
 	if(contenuFus->contenuElfFinal != NULL){
-		
+
 		int i;
-		
+
+    for (i=0;i<contenuFus->contenuElfFinal->sizeSections;i++){
+      free((contenuFus->contenuElfFinal->tabSections)[i].nomSection);
+    }
+
 		libererContenuElf(contenuFus->contenuElfFinal);
-		//free(contenuFus->contenuElfFinal->tabSections->nomSection);
-		for (i=0;i<contenuFus->contenuElfFinal->sizeSections;i++){
-			free((contenuFus->contenuElfFinal->tabSections)[i].nomSection);
-		}
-	
+
 	}
 	free(contenuFus);
-	
+
 	printf("Mémoire libérée (ContenuFus)\n");
-	
+
+}
+
+
+int fusionTabSymLocaux(ContenuElf * contenuElf,ContenuElf * contenuFusion){
+	Elf32_Sym * tabSymbFile = contenuElf->tabSymb;
+	int sizeTabFile = contenuElf->symTableSize;
+	int i =0;
+
+	while( i<sizeTabFile && ELF32_ST_BIND(tabSymbFile[i].st_info) == STB_LOCAL){
+		ajoutTabSymb(contenuFusion,tabSymbFile[i]);
+		i++;
+  }
+
+  return i;
+}
+
+void updateIndexSymb(int lastLocauxAdd,ContenuFus * contenuFus){
+			Elf32_Sym ** tabSymbFile = &(contenuFus->contenuElfFinal->tabSymb);
+			int sizeTabFile = contenuFus->contenuElfFinal->symTableSize;
+			int i= lastLocauxAdd;
+
+			for(; i<sizeTabFile ;i++){
+				(*tabSymbFile)[i].st_name = (*tabSymbFile)[i].st_name + contenuFus->contenuElf1->sizeTabString;
+			}
+}
+
+
+void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenuFus){
+	Elf32_Sym * tabSymbFile_1 = contenuFus->contenuElf1->tabSymb;
+	int sizeTabFile_1 = contenuFus->contenuElf1->symTableSize;
+
+	Elf32_Sym * tabSymbFile_2 = contenuFus->contenuElf2->tabSymb;
+	int sizeTabFile_2 = contenuFus->contenuElf2->symTableSize;
+
+	int * sizeTableSym = &(contenuFus->contenuElfFinal->symTableSize);
+	int i= firstGlobal_1;
+	int j= firstGlobal_2;
+	char * nomSymb_1;
+	char * nomSymb_2;
+
+	int sizeWrited = 0;
+	int flag = 0;
+	int nbMaxGlobaux = (sizeTabFile_1 -firstGlobal_1) + (sizeTabFile_2 -firstGlobal_2);
+	int * tabWrited = malloc(sizeof(int)*nbMaxGlobaux);
+
+	for(; i<sizeTabFile_1 ;i++){
+			j= firstGlobal_2;
+			flag = 0;
+			for(;j < sizeTabFile_2;j++){
+
+				nomSymb_1 = LireNomSymb((char *)contenuFus->contenuElf1->tableString, tabSymbFile_1[i].st_name);
+				nomSymb_2 = LireNomSymb((char *)contenuFus->contenuElf2->tableString, tabSymbFile_2[j].st_name);
+
+				// SI LES SYMBOLES SONT GLOBAUX ET SONT DE MEME NOM
+				if(strcmp(nomSymb_1,nomSymb_2) == 0){
+
+					if(tabSymbFile_1[i].st_shndx != SHN_UNDEF && tabSymbFile_2[j].st_shndx != SHN_UNDEF){
+							ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_1[i]);
+
+					}else if(tabSymbFile_1[i].st_shndx != SHN_UNDEF && tabSymbFile_2[j].st_shndx == SHN_UNDEF){
+						  ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_1[i]);
+
+
+					}else if(tabSymbFile_1[i].st_shndx == SHN_UNDEF && tabSymbFile_2[j].st_shndx != SHN_UNDEF){
+							ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_2[j]);
+							contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name = contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name
+																																	+ contenuFus->contenuElf1->sizeTabString;
+
+					}else{
+						printf("Deux Symboles globaux défini avec le même nom sont présents dans la table des entrées\n");
+						printf("Echec de l'édition des liens\n");
+						exit(1);
+					}
+					flag =1;
+					tabWrited[sizeWrited] = j;
+					sizeWrited++;
+			}
+			if(flag == 0){
+					ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_1[i]);
+					flag =1;
+			}
+		}
+	}
+
+	j= firstGlobal_2;
+
+	for(;j< sizeTabFile_2;j++){
+		i=0;
+		while(i<sizeWrited && tabWrited[i] != j){
+			i++;
+
+		}
+		if(sizeWrited == i){
+				ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_2[j]);
+				contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name = contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name
+																														+ contenuFus->contenuElf1->sizeTabString;
+		}
+	}
+  printf("Taille tab %i",contenuFus->contenuElfFinal->symTableSize);
+	free(tabWrited);
+}
+
+void ajoutTabSymb(ContenuElf * contenuFusion,Elf32_Sym symbAdd){
+
+	int * sizeTableSym = &(contenuFusion->symTableSize);
+
+	if((*sizeTableSym) > 0 ){
+		Elf32_Sym * tabTemp = realloc(contenuFusion->tabSymb,sizeof(Elf32_Sym)*((*sizeTableSym)+1));
+		if(tabTemp!=NULL){
+				contenuFusion->tabSymb = tabTemp;
+				contenuFusion->tabSymb[*sizeTableSym] = symbAdd;
+				(*sizeTableSym)++;
+		}
+	}else{
+		contenuFusion->tabSymb[*sizeTableSym] = symbAdd;
+		(*sizeTableSym)++;
+	}
+
 }

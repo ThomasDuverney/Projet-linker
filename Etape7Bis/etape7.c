@@ -72,19 +72,6 @@ int main(int argc,char* argv[]){
 	printf("AFFICHAGE TABLE FUSION\n");
   fonctionEtape4(contenuFus->contenuElfFinal->tabSymb,contenuFus->contenuElfFinal->symTableSize,contenuFus->contenuElfFinal->tableString);
 
-
- // FAIRE FUSION LOCAUX && CHANGER LES OFFSET DANS SH_NAME SUR LE FICHIER 2
- // FAIRE FUSION GLOBAUX
- // CHANGER LES PARAMETRES DE L'ETAPE4
-
-	/*
-	// Affichage des sections
-	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
-	afficherVerifFusion(contenuFus->contenuElf1);void fusionTabSymGlobal(int firstGlobal,ContenuFus * contenuFus)
-
-	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
-	afficherVerifFusion(contenuFus->contenuElfFinal);*/
-
 	fclose(fichDest);
 	fclose(secondFich);
 	return 0;
@@ -94,26 +81,14 @@ int main(int argc,char* argv[]){
 int fusionTabSymLocaux(ContenuElf * contenuElf,ContenuElf * contenuFusion){
 	Elf32_Sym * tabSymbFile = contenuElf->tabSymb;
 	int sizeTabFile = contenuElf->symTableSize;
-	int * sizeTableSym = &(contenuFusion->symTableSize);
-
 	int i =0;
 
 	while( i<sizeTabFile && ELF32_ST_BIND(tabSymbFile[i].st_info) == STB_LOCAL){
-		if((*sizeTableSym) > 0 ){
-			Elf32_Sym * tabTemp = realloc(contenuFusion->tabSymb,sizeof(Elf32_Sym)*((*sizeTableSym)+1));
-			if(tabTemp!=NULL){
-					contenuFusion->tabSymb = tabTemp;
-					contenuFusion->tabSymb[*sizeTableSym] = tabSymbFile[i];
-					(*sizeTableSym)++;
-			}
-  	}else{
-			contenuFusion->tabSymb[*sizeTableSym] = tabSymbFile[i];
-			(*sizeTableSym)++;
-		}
+		ajoutTabSymb(contenuFusion,tabSymbFile[i]);
 		i++;
- }
+  }
 
- return i;
+  return i;
 }
 
 void updateIndexSymb(int lastLocauxAdd,ContenuFus * contenuFus){
@@ -141,16 +116,15 @@ void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenu
 	char * nomSymb_2;
 
 	int sizeWrited = 0;
-	int flag ;
+	int flag = 0;
 	int nbMaxGlobaux = (sizeTabFile_1 -firstGlobal_1) + (sizeTabFile_2 -firstGlobal_2);
 	int * tabWrited = malloc(sizeof(int)*nbMaxGlobaux);
 
 	for(; i<sizeTabFile_1 ;i++){
-
-		  if( ELF32_ST_BIND(tabSymbFile_1[i].st_info) == STB_GLOBAL){
-				j= firstGlobal_2;
+			j= firstGlobal_2;
+			flag = 0;
 			for(;j < sizeTabFile_2;j++){
-				printf("symb %i\n",j);
+
 				nomSymb_1 = LireNomSymb((char *)contenuFus->contenuElf1->tableString, tabSymbFile_1[i].st_name);
 				nomSymb_2 = LireNomSymb((char *)contenuFus->contenuElf2->tableString, tabSymbFile_2[j].st_name);
 
@@ -169,7 +143,6 @@ void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenu
 							contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name = contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name
 																																	+ contenuFus->contenuElf1->sizeTabString;
 
-
 					}else{
 						printf("Deux Symboles globaux défini avec le même nom sont présents dans la table des entrées\n");
 						printf("Echec de l'édition des liens\n");
@@ -177,12 +150,12 @@ void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenu
 					}
 					flag =1;
 					tabWrited[sizeWrited] = j;
-					printf("JE test %i\n",tabWrited[sizeWrited]);
 					sizeWrited++;
-				}
 			}
 			if(flag == 0){
+					printf("Je passe %s and %i \n",	nomSymb_1,i);
 					ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_1[i]);
+					flag =1;
 			}
 		}
 	}
@@ -192,12 +165,10 @@ void fusionTabSymGlobal(int firstGlobal_1,int firstGlobal_2,ContenuFus * contenu
 	for(;j< sizeTabFile_2;j++){
 		i=0;
 		while(i<sizeWrited && tabWrited[i] != j){
-			printf("les numero de tabWrited %i\n",tabWrited[i]);
 			i++;
 
 		}
 		if(sizeWrited == i){
-				printf("JE PASSE %i\n",tabWrited[i]);
 				ajoutTabSymb(contenuFus->contenuElfFinal,tabSymbFile_2[j]);
 				contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name = contenuFus->contenuElfFinal->tabSymb[(*sizeTableSym)-1].st_name
 																														+ contenuFus->contenuElf1->sizeTabString;

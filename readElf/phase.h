@@ -14,4 +14,6 @@ void fonctionEtape4(Elf32_Sym * tabSymb,int symTableSize,char * tabString);
 
 void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHeaders,Elf32_Shdr * tabReal,int tabRealSize);
 
-void fonctionEtape6(ContenuFus * contenuFus);
+void fonctionEtape6(ContenuFus * contenuFus,SectionInfos ** tabSectionProgb1,SectionInfos ** tabSectionProgb2,int * size1,int * size2);
+
+void fonctionEtape7(ContenuFus * contenuFus,SectionInfos ** tabSectionStr1,SectionInfos ** tabSectionStr2,int * size1,int * size2);
