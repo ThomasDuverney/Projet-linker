@@ -525,11 +525,9 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 	for(k=0;k<size2;k++){
 		i=0;
 		while(i<sizeWrited && tabWrited[i] != k){
-			printf("%i\n",tabWrited[i]);
 			i++;
 		}
 		if(sizeWrited == i){
-			printf("Recherhche fichier 2 %s \n",tabSection2[k].nomSection);
 			CopieSectionInfos(contenuFus,&(tabSection2[k]));
 		}
 	}

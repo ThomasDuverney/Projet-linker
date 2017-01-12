@@ -488,7 +488,6 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 			//printf("%s\n",tabSection[i].nomSection);
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
-				printf("%s \n",tabSection1[k].nomSection);
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
 				//printf(" apres avant copie n %i\n",i);
 				//afficherVerifFusion(contenuFus->contenuElf1);
@@ -517,19 +516,16 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 			}
 		}
 		if(flag == 0){
-					printf("%s \n",tabSection1[k].nomSection);
-					CopieSectionInfos(contenuFus,&(tabSection1[k]));
+			CopieSectionInfos(contenuFus,&(tabSection1[k]));
 		}
 
 	}
 	for(k=0;k<size2;k++){
 		i=0;
 		while(i<sizeWrited && tabWrited[i] != k){
-			printf("%i\n",tabWrited[i]);
 			i++;
 		}
 		if(sizeWrited == i){
-			printf("Recherhche fichier 2 %s \n",tabSection2[k].nomSection);
 			CopieSectionInfos(contenuFus,&(tabSection2[k]));
 		}
 	}
@@ -552,4 +548,26 @@ void afficherLesContenusSections(ContenuElf* contenuElf){
 			printf("\n\n");
 		}
 		printf("\n");
+}
+
+/*
+	Remplit une structure de type ContenuFus à l'aide de deux fichiers
+	fichDest, FILE * : le premier fichier
+	secondFich, FILE * : le second fichier
+	retour ContenuFus * : la structure créée remplie
+*/
+ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich){
+			ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
+
+			contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));
+			contenuFus->contenuElf2 = malloc(sizeof(ContenuElf));
+			contenuFus->contenuElfFinal = malloc(sizeof(ContenuElf));
+
+			Elf32_Shdr * TabHeaders1 = NULL;
+			Elf32_Shdr * TabHeaders2 = NULL;
+
+			remplirStructure(fichDest,contenuFus->contenuElf1,&TabHeaders1);
+			remplirStructure(secondFich,contenuFus->contenuElf2,&TabHeaders2);
+
+			return contenuFus;
 }

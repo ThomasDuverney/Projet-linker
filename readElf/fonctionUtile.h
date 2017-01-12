@@ -110,4 +110,8 @@ void afficherVerifFusion(ContenuElf* contenuElf);
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos);
 
 void afficherLesContenusSections(ContenuElf* contenuElf);
+/*
+	Remplit une structure de type ContenuFus à l'aide de deux fichiers
+*/
+ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich);
 #endif

@@ -14,16 +14,17 @@ void afficherParametres(){
 			printf("\t  -x <numéro (ou nom) de section> <fichier> \t Affiche le contenu de la section de numéro (ou nom) passé en pramaètre\n");
 			printf("\t  -s <fichier> \t\t\t\t\t Affiche la table des symboles du fichier elf passé en paramètre\n");
 			printf("\t  -r <fichier> \t\t\t\t\t Affichage des réallocations contenu dans le fichier elf passé en paramètre\n");
+			printf("\t  -f <fichier> \t\t\t\t\t Fusion des sections du fichier\n");
 }
 
 int main (int argc, char *argv[]){
 
-  	FILE* fichierElf;
+	FILE* fichierElf;
   
 	int opt;
 	static int do_header, do_sections, 
 				do_hex_dump, do_symbols, 
-				do_relocs; // flags pour les options
+				do_relocs, do_fusion_sections; // flags pour les options
 
 	// Tableau des options
 	struct option longopts[] = {
@@ -33,13 +34,14 @@ int main (int argc, char *argv[]){
 		{ "hex-dump", required_argument, 0, 'x'},
 		{ "symbols", no_argument, 0, 's'},
 		{ "relocs",	no_argument, 0, 'r'},
+		{ "fusion-symbols", no_argument, 0, 'f'},
 		{ NULL, 0, NULL, 0 }
 	};
 
 	// Parcours des options
 	if(argc >= 3){
 		char * sectionHexDump;
-		while ((opt = getopt_long(argc, argv, "ahSsrx:", longopts, NULL)) != -1) {	
+		while ((opt = getopt_long(argc, argv, "ahSsrfx:", longopts, NULL)) != -1) {	
 			switch(opt) {
 				case 'a':
 					do_header++;
@@ -63,6 +65,9 @@ int main (int argc, char *argv[]){
 				case 'r':
 					do_relocs++;
 					break;
+				case 'f':
+					do_fusion_sections++;
+					break;
 				default:
 					fprintf(stderr, "Option inconnue %c\n", opt);
 					afficherParametres();
@@ -70,42 +75,59 @@ int main (int argc, char *argv[]){
 			}
 		}
 
-		// Ouverture du fichier
-		fichierElf = ouvrirFichier(argv[optind++]);
-	
-		ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
-		contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));	
-		
-		Elf32_Shdr * TabHeaders = NULL;
-		remplirStructure(fichierElf,contenuFus->contenuElf1,&TabHeaders);
-		
-		// Appel des fonctions nécessaires
-		if(do_header){
-			fonctionEtape1(contenuFus->contenuElf1->hdrElf);
-		}
-	
-		if(do_sections){
-			fonctionEtape2(contenuFus->contenuElf1->hdrElf,fichierElf,contenuFus->contenuElf1->TableNomSection,TabHeaders);
-		}	
-
-		if(do_hex_dump){
-			fonctionEtape3(fichierElf,sectionHexDump,contenuFus->contenuElf1->hdrElf,contenuFus->contenuElf1->TableNomSection,TabHeaders);
-		}	
-
-		if(do_symbols){
+		// Phase 1
+		// Parcours des fichiers
+		int i = optind;
+		if(do_header || do_sections || do_hex_dump || do_symbols || do_relocs){
+			while(argv[i] != NULL){
+				fichierElf = ouvrirFichier(argv[i]);
+				if(!fichierElf){
+					printf("Impossible d'ouvrir le fichier %s\n", argv[i]);
+					exit(1);
+				}
 			
-			fonctionEtape4(contenuFus->contenuElf1->tabSymb,contenuFus->contenuElf1->symTableSize,contenuFus->contenuElf1->tableString);
-		}	
-
-		if(do_relocs){
-			fonctionEtape5(contenuFus->contenuElf1->hdrElf,fichierElf,TabHeaders,contenuFus->contenuElf1->tabRela,contenuFus->contenuElf1->tabRelaSize);
-		}
+				printf("\x1b[34mAffichage du fichier %s\n\x1b[0m\n", argv[i]);
+			
+				ContenuElf * contenuElf = malloc(sizeof(ContenuElf));	
+				Elf32_Shdr * TabHeaders = NULL;
+				remplirStructure(fichierElf,contenuElf,&TabHeaders);
+		
+				// Appel des fonctions nécessaires
+				if(do_header){
+					fonctionEtape1(contenuElf->hdrElf);
+				}
 	
-		// Fermeture du fichier
-		fclose(fichierElf);
+				if(do_sections){
+					fonctionEtape2(contenuElf->hdrElf,fichierElf,contenuElf->TableNomSection,TabHeaders);
+				}	
+
+				if(do_hex_dump){
+					fonctionEtape3(fichierElf,sectionHexDump,contenuElf->hdrElf,contenuElf->TableNomSection,TabHeaders);
+				}	
+
+				if(do_symbols){
+					fonctionEtape4(contenuElf->tabSymb,contenuElf->symTableSize,contenuElf->tableString);
+				}	
+
+				if(do_relocs){
+					fonctionEtape5(contenuElf->hdrElf,fichierElf,TabHeaders,contenuElf->tabRela,contenuElf->tabRelaSize);
+				}
+
+				fclose(fichierElf);
+				i++;
+			}
+		}
+
+		// Phase 2
+		if(do_fusion_sections){
+			FILE * fichDest = ouvrirFichier(argv[optind]);
+			FILE * secondFich = ouvrirFichier(argv[optind+1]);
+			ContenuFus* contenuFus = remplirStructureFusion(fichDest, secondFich);
+			fonctionEtape6(contenuFus);
+		}
 	}else{
 		afficherParametres();
 	}
 
-  	return 0;
+	return 0;
 }
