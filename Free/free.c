@@ -4,8 +4,9 @@
 #include <elf.h>
 #include <string.h>
 
-void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders);
+void libererMemoire(ContenuFus * contenuFus);
 void libererContenuElf(ContenuElf * contenuElf);
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
 
 int main (int argc, char *argv[]){
 
@@ -19,7 +20,8 @@ int main (int argc, char *argv[]){
 	fichierElf = ouvrirFichier(argv[1]);
 	remplirStructure(fichierElf,contenuFus->contenuElf1,&TabHeaders);
 
-	libererMemoire(contenuFus,TabHeaders);	
+	libererMemoire(contenuFus);	
+	libererTabHeaders(TabHeaders);
 
 		// Fermeture du fichier
 		fclose(fichierElf);
@@ -27,7 +29,14 @@ int main (int argc, char *argv[]){
 return 0;
 }
 
-void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders){
+void libererTabHeaders(Elf32_Shdr * TabHeaders){
+	
+	free(TabHeaders);
+	printf("\nMémoire libérée (TabHeaders)\n");
+	
+}
+
+void libererMemoire(ContenuFus * contenuFus){
 
 	if(contenuFus->contenuElf1 != NULL){
 		
@@ -46,8 +55,10 @@ void libererMemoire(ContenuFus * contenuFus,Elf32_Shdr * TabHeaders){
 		libererContenuElf(contenuFus->contenuElfFinal);
 	
 	}
-	free(TabHeaders);
 	free(contenuFus);
+	
+	printf("\nMémoire libérée (ContenuFus)\n");
+	
 }
 
 void libererContenuElf(ContenuElf * contenuElf){

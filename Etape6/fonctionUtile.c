@@ -568,7 +568,7 @@ void libererContenuElf(ContenuElf * contenuElf){
 	free(contenuElf->tabRela);
 	
 
-	for (i=0;i<contenuElf->hdrElf.e_shnum;i++){
+	for (i=0;i<contenuElf->sizeSections;i++){
 		free((contenuElf->tabSections)[i].contenuSection);
 	}
 
@@ -579,7 +579,6 @@ void libererContenuElf(ContenuElf * contenuElf){
 	}	
 	
 	free(contenuElf);
-	
 	
 }
 
@@ -599,8 +598,14 @@ void libererMemoire(ContenuFus * contenuFus){
 	}
 	
 	if(contenuFus->contenuElfFinal != NULL){
-	
+		
+		int i;
+		
 		libererContenuElf(contenuFus->contenuElfFinal);
+		//free(contenuFus->contenuElfFinal->tabSections->nomSection);
+		for (i=0;i<contenuFus->contenuElfFinal->sizeSections;i++){
+			free((contenuFus->contenuElfFinal->tabSections)[i].nomSection);
+		}
 	
 	}
 	free(contenuFus);
