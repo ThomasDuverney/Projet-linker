@@ -406,4 +406,8 @@ void fonctionEtape6(ContenuFus * contenuFus){
 
 	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
 	afficherVerifFusion(contenuFus->contenuElfFinal);
+	
+	libererSectionInfos(tabSectionProgb1,size1);
+	libererSectionInfos(tabSectionProgb2,size2);
+
 }

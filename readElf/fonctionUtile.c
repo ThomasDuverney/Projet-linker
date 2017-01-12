@@ -128,6 +128,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
   int j = 0;
   SectionInfos * tabSectionType;
   *size=0;
+  SectionInfos newSectionInfos;
 
   while(j<contenuElf->hdrElf.e_shnum){
 
@@ -139,8 +140,11 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
               return NULL;
             }
             else{
-              tabSectionType[*size] = contenuElf->tabSections[j];
+
+	      dupliquerSectionInfos(&newSectionInfos,&(contenuElf->tabSections[j]));
+              tabSectionType[*size] = newSectionInfos;
               (*size)++;
+		
             }
         }else{
             SectionInfos * tabTemp;
@@ -150,7 +154,8 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
               return NULL;
             }else{
               tabSectionType=tabTemp;
-              tabSectionType[*size] = contenuElf->tabSections[j];
+              dupliquerSectionInfos(&newSectionInfos,&(contenuElf->tabSections[j]));
+              tabSectionType[*size] = newSectionInfos;
               (*size)++;
             }
         }
@@ -451,24 +456,14 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos){
 
-	//int i;
 	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection));
 	strcpy(newSectionInfos->nomSection,sectionInfos->nomSection);
-	
-/*	printf("\n pour le nom %s \n",sectionInfos->nomSection);
-	for(i=0;i<strlen(sectionInfos->nomSection);i++){
-		printf("%x",sectionInfos->nomSection[i]);	
-	}
-	
-	printf("pour le deuxième nom %s \n",newSectionInfos->nomSection);
-	for(i=0;i<strlen(sectionInfos->nomSection);i++){
-		printf("%x",newSectionInfos->nomSection[i]);	
-	}*/
 	
 	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;	
 	
 	newSectionInfos->contenuSection = malloc(sectionInfos->tabHdrSections.sh_size);
 	memcpy(newSectionInfos->contenuSection,sectionInfos->contenuSection,sectionInfos->tabHdrSections.sh_size);
+
 
 
 }
@@ -486,14 +481,12 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
 
 		for(i=0;i<size2;i++){
 
-			//printf("%s\n",tabSection[i].nomSection);
+	
 			if(strcmp(tabSection1[k].nomSection,tabSection2[i].nomSection) == 0){
+
 				//concatène et ecrit dans le header de la section progb1 la nouvelle taille
-				//printf(" apres avant copie n %i\n",i);
-				//afficherVerifFusion(contenuFus->contenuElf1);
 				CopieSectionInfos(contenuFus,&(tabSection1[k]));
-				//printf(" apres copie n %i\n",i);
-				//afficherVerifFusion(contenuFus->contenuElf1);
+
 			 	newSectionSize = tabSection1[k].tabHdrSections.sh_size + tabSection2[i].tabHdrSections.sh_size;
 			 	if(newSectionSize !=0){
 			  		unsigned char * tabTemp = realloc(contenuFus->contenuElfFinal->tabSections[(contenuFus->contenuElfFinal->sizeSections)-1].contenuSection,newSectionSize);
@@ -572,10 +565,13 @@ ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich){
 			return contenuFus;
 }
 
-void libererSectionInfos(SectionInfos * sectionInfos){
-	
-	//free(sectionInfos->nomSection);
-	//free(sectionInfos->contenuSection);
+void libererSectionInfos(SectionInfos * sectionInfos,int sizeTabSection){
+	int i;	
+	for (i=0;i<sizeTabSection;i++){
+	   free((sectionInfos)[i].contenuSection);
+	}
+
+
 	free(sectionInfos);
 	printf("Mémoire libérée (sectionInfos)\n");
 	}

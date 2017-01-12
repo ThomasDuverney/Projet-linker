@@ -117,7 +117,7 @@ ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich);
 /*
 Libère la mémoire de sectionInfos
 */
-void libererSectionInfos(SectionInfos * sectionInfos);
+void libererSectionInfos(SectionInfos * sectionInfos,int sizeTabSection);
 /*
 Libère la mémoire pour un TabHeaders
 */

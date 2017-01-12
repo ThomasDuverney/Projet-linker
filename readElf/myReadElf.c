@@ -122,18 +122,30 @@ int main (int argc, char *argv[]){
 		if(do_fusion_sections){
 			FILE * fichDest = ouvrirFichier(argv[optind]);
 			FILE * secondFich = ouvrirFichier(argv[optind+1]);
-			ContenuFus* contenuFus = remplirStructureFusion(fichDest, secondFich);
+			//ContenuFus* contenuFus = remplirStructureFusion(fichDest, secondFich);
+			ContenuFus * contenuFus = malloc(sizeof(ContenuFus));
+
+			contenuFus->contenuElf1 = malloc(sizeof(ContenuElf));
+			contenuFus->contenuElf2 = malloc(sizeof(ContenuElf));
+			contenuFus->contenuElfFinal = malloc(sizeof(ContenuElf));
+
+			Elf32_Shdr * TabHeaders1 = NULL;
+			Elf32_Shdr * TabHeaders2 = NULL;
+
+			remplirStructure(fichDest,contenuFus->contenuElf1,&TabHeaders1);
+			remplirStructure(secondFich,contenuFus->contenuElf2,&TabHeaders2);
+				
 			fonctionEtape6(contenuFus);
+			
+			libererTabHeaders(TabHeaders1);
+			libererTabHeaders(TabHeaders2);
+			libererMemoire(contenuFus);
+
+
 		}
 	}else{
 		afficherParametres();
 	}
-
-	/*libererSectionInfos(tabSectionProgb1);
-	libererSectionInfos(tabSectionProgb2);
-	libererTabHeaders(TabHeaders);
-	libererTabHeaders(TabHeaders2);
-	libererMemoire(contenuFus);*/
 
 	return 0;
 }
