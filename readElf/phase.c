@@ -13,7 +13,7 @@ void fonctionEtape1(Elf32_Ehdr structElf32){
 
 	    printf("En-tête ELF : \n");
 
-	// ------------LE NOMBRE MAGIQUE
+	// ------------LE NOMBRE MAGIQUE.
 	    printf("Magique :\t");
 
 	    for(int i=0;i<EI_NIDENT;++i)
