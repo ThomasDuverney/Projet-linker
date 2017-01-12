@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <elf.h>
 
+#ifndef __FONCTIONUTILE__
+#define __FONCTIONUTILE__
+
 typedef struct {
         char * nomSection;
         Elf32_Shdr  tabHdrSections;
@@ -17,13 +20,13 @@ typedef struct {
         SectionInfos * tabSections;
         int sizeSections;
 
-        unsigned char * tableString;
+        char * tableString;
         int sizeTabString;
 
         int symTableSize;
-  	    Elf32_Sym * tabSymb;
+  	Elf32_Sym * tabSymb;
 
-  	     char * TableNomSection ;
+  	char * TableNomSection ;
 
         int tabRelaSize;
         Elf32_Shdr * tabRela;
@@ -87,7 +90,7 @@ char * LireNomSymb(char * tabString, int indexSymb);
 /*
 Retourne la table des string.
 */
-unsigned char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection);
+char * AccesTableString(Elf32_Shdr * tabHeaders,Elf32_Ehdr structElf32,int * size,FILE * fichierElf,char * TableNomSection);
 
 Elf32_Sym * AccesTableSymbole(FILE * fichierElf,Elf32_Ehdr structElf32,int * symTableSize,char* TableNomSection,Elf32_Shdr * tabHeaders);
 /*
@@ -107,3 +110,24 @@ void afficherVerifFusion(ContenuElf* contenuElf);
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos);
 
 void afficherLesContenusSections(ContenuElf* contenuElf);
+/*
+	Remplit une structure de type ContenuFus à l'aide de deux fichiers
+*/
+ContenuFus* remplirStructureFusion(FILE * fichDest, FILE * secondFich);
+/*
+Libère la mémoire de sectionInfos
+*/
+void libererSectionInfos(SectionInfos * sectionInfos,int sizeTabSection);
+/*
+Libère la mémoire pour un TabHeaders
+*/
+void libererTabHeaders(Elf32_Shdr * TabHeaders);
+/*
+Libère la mémoire d'un contenuElf (sous-fonction utilisée dans libererMemoire)
+*/
+void libererContenuElf(ContenuElf * contenuElf);
+/*
+Libère toute la mémoire lié aux paramètres
+*/
+void libererMemoire(ContenuFus * contenuFus);
+#endif

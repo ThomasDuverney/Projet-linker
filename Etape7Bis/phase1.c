@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "fonctionUtile.h"
-
+#include "phase1.h"
 
 
 void fonctionEtape1(Elf32_Ehdr structElf32){
@@ -237,7 +237,7 @@ void fonctionEtape2(Elf32_Ehdr structElf32, FILE * fichierElf,char* TableNomSect
 }
 
 void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders){
-	
+
 	Elf32_Shdr tempHed;
 	printf("Affichage de la section : %s \n",section);
 
@@ -258,10 +258,10 @@ void fonctionEtape3(FILE * fichierElf,char * section,Elf32_Ehdr structElf32,char
 	printf("\n");
 }
 
-void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32,char* TableNomSection,Elf32_Shdr * tabHeaders,Elf32_Sym * tabSymb,int symTableSize,char * tabString){
+void fonctionEtape4(Elf32_Sym * tabSymb,int symTableSize, char * tabString){
 
 	Elf32_Sym symbole;
-	
+
 	printf("Table des symboles\nNuméro || Valeur ||Taille|| Type  ||Portée|| Nom\n");
 
 	for(int i=0; i<symTableSize; i++){
@@ -330,7 +330,7 @@ void fonctionEtape4(FILE * fichierElf,Elf32_Ehdr structElf32,char* TableNomSecti
 				}
 
 		if (symbole.st_name){
-			char * nomSymb = LireNomSymb(tabString,symbole.st_name);
+			char * nomSymb = LireNomSymb((char *)tabString,symbole.st_name);
 			printf("%s",nomSymb);
 		}
 		printf("\n");
@@ -368,7 +368,7 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHea
 			else{
 				tabSymRela=AccesTabSymboleRela(tabReal[i].sh_offset,tabReal[i].sh_size,fichierElf);
 
-		
+
 				for(j =0 ; j < tabReal[i].sh_size/sizeof(Elf32_Rel) ; j++){
 					afficherRelocation(tabSymRela[j].r_info,tabSymRela[j].r_offset);
 				}
@@ -382,4 +382,18 @@ void fonctionEtape5(Elf32_Ehdr structElf32,FILE * fichierElf,Elf32_Shdr * tabHea
 	}
 
 		printf("\n\n");
+}
+
+
+void fonctionEtape6(ContenuFus * contenuFus){
+		// Affichage des sections
+	printf("\x1b[34mAffichage des sections du fichier 1 \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElf1);
+
+	printf("\x1b[34mAffichage des sections du fichier 2 \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElf2);
+
+	printf("\x1b[34mAffichage des sections du fichier fusionné \x1b[0m\n");
+	afficherLesContenusSections(contenuFus->contenuElfFinal);
+
 }
