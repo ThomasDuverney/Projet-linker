@@ -4,7 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "fonctionUtile.h"
-#include "phase1.h"
+#include "phase.h"
 
 
 void fonctionEtape1(Elf32_Ehdr structElf32){

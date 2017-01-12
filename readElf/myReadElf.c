@@ -4,7 +4,7 @@
 #include <getopt.h>
 #include <string.h>
 #include "fonctionUtile.h"
-#include "phase1.h"
+#include "phase.h"
 
 void afficherParametres(){
 			printf("Utilisation de myReadElf : ./myReadElf -option ...\n");
@@ -38,7 +38,7 @@ int main (int argc, char *argv[]){
 		{ NULL, 0, NULL, 0 }
 	};
 
-	// Parcours des options
+	// Parcours des incipales fonctions et chiers correspondants options
 	if(argc >= 3){
 		char * sectionHexDump;
 		while ((opt = getopt_long(argc, argv, "ahSsrfx:", longopts, NULL)) != -1) {	
