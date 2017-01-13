@@ -118,6 +118,7 @@ int main (int argc, char *argv[]){
 				}
 
 				libererContenuElf(contenuElf);
+				libererTabHeaders(TabHeaders);
 				i++;
 			}
 		}else{
@@ -139,10 +140,10 @@ int main (int argc, char *argv[]){
 
 			int size1;
 			int size2;
-	
+
 			SectionInfos * tabSecType1 = NULL;
 			SectionInfos * tabSecType2 = NULL;
-			
+
 			if(do_fusion_sections){
 				fonctionEtape6(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
 			}

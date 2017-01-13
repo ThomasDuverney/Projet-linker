@@ -26,7 +26,7 @@ typedef struct {
         int symTableSize;
   	    Elf32_Sym * tabSymb;
 
-  	char * TableNomSection ;
+      	char * TableNomSection;
 
         int tabRelaSize;
         Elf32_Shdr * tabRela;

@@ -410,13 +410,16 @@ void fonctionEtape7(ContenuFus * contenuFus,SectionInfos ** tabSectionStr1,Secti
 
   fusionSection(*tabSectionStr1,*tabSectionStr2,*size1,*size2,contenuFus);
 
-  int i;
+  int i =0;
   int sizetabsec = contenuFus->contenuElfFinal->sizeSections;
   while(i<sizetabsec && strcmp(contenuFus->contenuElfFinal->tabSections[i].nomSection,".strtab")){
     i++;
   }
   if(i!=sizetabsec){
-    contenuFus->contenuElfFinal->tableString = (char *) contenuFus->contenuElfFinal->tabSections[i].contenuSection;
+  	SectionInfos newSectionInfos;
+    dupliquerSectionInfos(&newSectionInfos,&(contenuFus->contenuElfFinal->tabSections[i]));
+    contenuFus->contenuElfFinal->tableString = (char *) newSectionInfos.contenuSection;
+
   }
 
   contenuFus->contenuElfFinal->tabSymb = malloc(sizeof(Elf32_Sym));

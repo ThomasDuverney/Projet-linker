@@ -8,7 +8,7 @@ char* lire_nom(Elf32_Ehdr structElf32,int numSection,FILE* fichierElf,char* Tabl
 
      Elf32_Shdr structSectionHeader;
 
-     char* name = "";
+     char* name = ""/*strdup("")*/;
 
     fseek(fichierElf, structElf32.e_shoff + numSection * sizeof(Elf32_Shdr), SEEK_SET);
     fread(&structSectionHeader, 1, sizeof(Elf32_Shdr), fichierElf);
@@ -40,16 +40,12 @@ FILE * ouvrirFichier(char * nomFichier){
 
 char* AccesTableNomSection(Elf32_Ehdr elfHdr,FILE * fichierElf){
 
-
   char* tabNomSection = NULL;
   Elf32_Shdr sectHdr;
 
-   // read section name string table
-  // first, read its header
   fseek(fichierElf, elfHdr.e_shoff + elfHdr.e_shstrndx * sizeof sectHdr, SEEK_SET);
   fread(&sectHdr, 1, sizeof (sectHdr), fichierElf);
 
-  // next, read the section, string data
   tabNomSection = malloc(sectHdr.sh_size);
   if(tabNomSection == NULL){
     printf("Erreur alocation AccesTableNomSection ");
@@ -130,7 +126,7 @@ SectionInfos * RechercheSectionByType(int typeSection,int * size,ContenuElf * co
   *size=0;
   SectionInfos newSectionInfos;
 
-  while(j<contenuElf->hdrElf.e_shnum){
+  while(j<contenuElf->sizeSections){
 
     if(typeSection == contenuElf->tabSections[j].tabHdrSections.sh_type){
         if(*size == 0){
@@ -423,7 +419,6 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 						dupliquerSectionInfos(&newSectionInfos,sectionInfos);
 						contenuFus->contenuElfFinal->tabSections[contenuFus->contenuElfFinal->sizeSections] = newSectionInfos;
         				        contenuFus->contenuElfFinal->sizeSections++;
-
 					}
 
 				}else{
@@ -442,7 +437,7 @@ void CopieSectionInfos(ContenuFus * contenuFus,const SectionInfos * sectionInfos
 
 void dupliquerSectionInfos(SectionInfos  * newSectionInfos,const SectionInfos * sectionInfos){
 
-	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection));
+	newSectionInfos->nomSection = malloc(strlen(sectionInfos->nomSection)*sizeof(char));
 	strcpy(newSectionInfos->nomSection,sectionInfos->nomSection);
 
 	newSectionInfos->tabHdrSections = sectionInfos->tabHdrSections;
@@ -458,12 +453,12 @@ void fusionSection(SectionInfos * tabSection1,SectionInfos * tabSection2,int siz
   int flag=0;
 	int sizeWrited = 0;
 	int newSectionSize = 0;
-	int * tabWrited = malloc(size2+size1);
+	int * tabWrited = malloc(size2+size1*sizeof(int));
 
 	contenuFus->contenuElfFinal->sizeSections = 0;
 
 	for(k=0;k<size1;k++){
-
+    flag =0;
 		for(i=0;i<size2;i++){
 
 
@@ -556,7 +551,6 @@ void libererSectionInfos(SectionInfos * sectionInfos,int sizeTabSection){
 	   free(sectionInfos[i].contenuSection);
 	}
 
-
 	free(sectionInfos);
 	printf("Mémoire libérée (sectionInfos)\n");
 	}
@@ -572,21 +566,26 @@ void libererContenuElf(ContenuElf * contenuElf){
 
 	int i;
 
-	free(contenuElf->tableString);
-	free(contenuElf->TableNomSection);
-	free(contenuElf->tabSymb);
-	free(contenuElf->tabRela);
-
-
 	for (i=0;i<contenuElf->sizeSections;i++){
 		free((contenuElf->tabSections)[i].contenuSection);
 	}
 
 	free(contenuElf->tabSections);
 
-	if(contenuElf->fichierElf != NULL){
-		fclose(contenuElf->fichierElf);
-	}
+  if(contenuElf->tableString != NULL)
+    free(contenuElf->tableString);
+
+  if(contenuElf->TableNomSection != NULL)
+    free(contenuElf->TableNomSection);
+
+  if(contenuElf->tabSymb != NULL)
+    free(contenuElf->tabSymb);
+
+  if(contenuElf->tabRela != NULL)
+    free(contenuElf->tabRela);
+
+  if(contenuElf->fichierElf != NULL)
+  		fclose(contenuElf->fichierElf);
 
 	free(contenuElf);
 
@@ -595,21 +594,9 @@ void libererContenuElf(ContenuElf * contenuElf){
 
 void libererMemoire(ContenuFus * contenuFus){
 
-	if(contenuFus->contenuElf1 != NULL){
-
-		libererContenuElf(contenuFus->contenuElf1);
-
-	}
-
-	if(contenuFus->contenuElf2 != NULL){
-
-		libererContenuElf(contenuFus->contenuElf2);
-
-	}
-
 	if(contenuFus->contenuElfFinal != NULL){
 
-		int i;
+	int i;
 
     for (i=0;i<contenuFus->contenuElfFinal->sizeSections;i++){
       free((contenuFus->contenuElfFinal->tabSections)[i].nomSection);
@@ -618,6 +605,18 @@ void libererMemoire(ContenuFus * contenuFus){
 		libererContenuElf(contenuFus->contenuElfFinal);
 
 	}
+  if(contenuFus->contenuElf1 != NULL){
+
+    libererContenuElf(contenuFus->contenuElf1);
+
+  }
+
+  if(contenuFus->contenuElf2 != NULL){
+
+    libererContenuElf(contenuFus->contenuElf2);
+
+  }
+
 	free(contenuFus);
 
 	printf("Mémoire libérée (ContenuFus)\n");
