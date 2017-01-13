@@ -34,14 +34,15 @@ int main (int argc, char *argv[]){
 		{ "hex-dump", required_argument, 0, 'x'},
 		{ "symbols", no_argument, 0, 's'},
 		{ "relocs",	no_argument, 0, 'r'},
-		{ "fusion-symbols", no_argument, 0, 'f'},
+		{ "fusion-sections", no_argument, 0, 'f'},
+		{ "fusion-symbols", no_argument, 0, 't'},
 		{ NULL, 0, NULL, 0 }
 	};
 
 	// Parcours des incipales fonctions et chiers correspondants options
 	if(argc >= 3){
 		char * sectionHexDump;
-		while ((opt = getopt_long(argc, argv, "ahSsrfx:", longopts, NULL)) != -1) {
+		while ((opt = getopt_long(argc, argv, "ahSsrftx:", longopts, NULL)) != -1) {
 			switch(opt) {
 				case 'a':
 					do_header++;
@@ -79,9 +80,9 @@ int main (int argc, char *argv[]){
 		}
 
 		// Phase 1
-		// Parcours des fichiers
 		int i = optind;
 		if(do_header || do_sections || do_hex_dump || do_symbols || do_relocs){
+			// Parcours des fichiers
 			while(argv[i] != NULL){
 				fichierElf = ouvrirFichier(argv[i]);
 				if(!fichierElf){
@@ -116,13 +117,11 @@ int main (int argc, char *argv[]){
 					fonctionEtape5(contenuElf->hdrElf,fichierElf,TabHeaders,contenuElf->tabRela,contenuElf->tabRelaSize);
 				}
 
-				fclose(fichierElf);
+				libererContenuElf(contenuElf);
 				i++;
 			}
-		}
-
-		// Phase 2
-		if(do_fusion_sections){
+		}else{
+			// Phase 2
 			FILE * fichDest = ouvrirFichier(argv[optind]);
 			FILE * secondFich = ouvrirFichier(argv[optind+1]);
 			//ContenuFus* contenuFus = remplirStructureFusion(fichDest, secondFich);
@@ -140,21 +139,26 @@ int main (int argc, char *argv[]){
 
 			int size1;
 			int size2;
-
+	
 			SectionInfos * tabSecType1 = NULL;
 			SectionInfos * tabSecType2 = NULL;
+			
+			if(do_fusion_sections){
+				fonctionEtape6(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
+			}
 
-			//fonctionEtape6(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
-			fonctionEtape7(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
+			if(do_fusion_tab_symb){
+				fonctionEtape7(contenuFus,&tabSecType1,&tabSecType2,&size1,&size2);
+			}
 
 			libererSectionInfos(tabSecType1,size1);
 			libererSectionInfos(tabSecType2,size2);
 			libererTabHeaders(TabHeaders1);
 			libererTabHeaders(TabHeaders2);
 			libererMemoire(contenuFus);
-
-
 		}
+
+
 	}else{
 		afficherParametres();
 	}
