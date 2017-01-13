@@ -3,50 +3,68 @@
 case $1 in
 	#Etape 1
 	1)echo -e "Etape 1\n"
+	echo -e "./myReadElf -h file$2.o \n" 
 	./myReadElf -h file$2.o
-	readelf -h file1.o;;
+	readelf -h file$2.o;;
 
 	2)
 	#Etape 2
 	echo -e "Etape 2\n"
+	echo -e "./myReadElf -S file$2.o \n" 
 	./myReadElf -S file$2.o
 	readelf -S file$2.o;;
 
 	3)
 	#Etape 3
 	echo -e "Etape 3\n"
-	echo -e "Recherche par numéro\n"
+	echo -e "\n\nRecherche par numéro\n"
+	echo -e "./myReadElf -x 1 file$2.o \n" 
 	./myReadElf -x 1 file$2.o 
-	echo -e "Recherche par nom\n"
+	echo -e "\n\nRecherche par nom\n"
+	echo -e "./myReadElf -x .text file$2.o \n" 
 	./myReadElf -x .text file$2.o
-	echo -e "Comparaison avec le readelf \n"
+	echo -e "\n\nComparaison avec le readelf \n"
 	readelf -x 1 file$2.o 
-	echo -e "Affichage d'une section vide \n"
+	echo -e "\n\nAffichage d'une section vide \n"
+	echo -e "./myReadElf -x .bss file$2.o \n" 
 	./myReadElf -x .bss file$2.o
-	readelf -x 4 file$2.o
-	echo -e "Affichage d'un hexdump pour comparer\n"
-	hexdump -C file$2.o;;
+	readelf -x 4 file$2.o;;
 
 	4)
 	#Etape 4
 	echo -e "Etape 4\n"
+	echo -e "./myReadElf -s file$2.o \n" 
 	./myReadElf -s file$2.o 
 	readelf -s file$2.o;;
 
 	5)
 	#Etape 5
 	echo -e "Etape 5\n"
+	echo -e "./myReadElf -r file$2.o \n" 
 	./myReadElf -r file$2.o 
 	readelf -r file$2.o;;
 
-	phase1)
+	multi_file)
 	echo -e "Récapitulatif phase 1 \n"
 	echo -e "Affichage de toutes les infos de plusieurs fichiers \n"
+	echo -e "./myReadElf -a file1.o file2.o \n" 
 	./myReadElf -a file1.o file2.o;;
+
+	multi_arg)
+	echo -e "Récapitulatif phase 1 \n"
+	echo -e "Affichage d'un fichier avec plusieurs arguments \n"
+	echo -e "./myReadElf -Sh file1.o \n" 
+	./myReadElf -Sh file1.o ;;
 
 	#Etape 6
 	6)
-	echo -e "Etape \n"
+	echo -e "Etape 6\n"
+	echo -e "./myReadElf -f file1.o file2.o \n" 
 	./myReadElf -f file1.o file2.o;;
-
+	
+	#Etape 7
+	7)
+	echo -e "Etape 7\n"
+	echo -e "./myReadElf -t file1.o file2.o\n\n"
+	./myReadElf -t file1.o file2.o;;
 esac

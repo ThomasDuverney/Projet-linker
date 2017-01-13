@@ -8,13 +8,14 @@
 
 void afficherParametres(){
 			printf("Utilisation de myReadElf : ./myReadElf -option ...\n");
-			printf("Options : -h <fichier> \t\t\t\t\t Affiche les infos contenu dans le header du fichier elf en paramètre\n");
-			printf("\t -a <fichier> \t\t\t\t\t  Affiche toutes les informations du fichier elf passé en paramètre\n");
+			printf("Options : -h <fichier> \t\t\t\t\t Affiche les infos contenues dans le header du fichier elf en paramètre\n");
+			printf("\t  -a <fichier> \t\t\t\t\t Affiche toutes les informations du fichier elf passé en paramètre\n");
 			printf("\t  -S <fichier> \t\t\t\t\t Affiche les informations de la table des sections du fichier elf passé en paramètre\n");
 			printf("\t  -x <numéro (ou nom) de section> <fichier> \t Affiche le contenu de la section de numéro (ou nom) passé en pramaètre\n");
 			printf("\t  -s <fichier> \t\t\t\t\t Affiche la table des symboles du fichier elf passé en paramètre\n");
-			printf("\t  -r <fichier> \t\t\t\t\t Affichage des réallocations contenu dans le fichier elf passé en paramètre\n");
+			printf("\t  -r <fichier> \t\t\t\t\t Affichage des réallocations contenues dans le fichier elf passé en paramètre\n");
 			printf("\t  -f <fichier> \t\t\t\t\t Fusion des sections du fichier\n");
+			printf("\t  -t <fichier> \t\t\t\t\t Fusion des symboles du fichier\n");
 }
 
 int main (int argc, char *argv[]){
